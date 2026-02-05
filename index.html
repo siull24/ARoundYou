@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LocAR Debug</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.2/aframe/build/aframe-ar-nft-location.min.js"></script>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+
+    <style>
+      #debug-overlay {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        color: #0f0;
+        font-family: monospace;
+        font-size: 0.9em;
+        padding: 10px;
+        z-index: 9999;
+        max-height: 30vh;
+        overflow-y: auto;
+        white-space: pre-wrap;
+      }
+
+      a-scene {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 0;
+        background: transparent !important;
+      }
+    </style>
+  </head>
+  <body style="margin: 0; overflow: hidden">
+    <button id="start-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 1em 2em; font-size: 1.2em; z-index: 10000; background: #000; color: #fff; border: none; border-radius: 8px; cursor: pointer;">Start AR</button>
+
+    <button id="toggle-view" style="position: absolute; top: 20px; right: 20px; padding: 0.5em 1em; font-size: 1em; z-index: 10001; background: #fff; color: #000; border: 1px solid #000; border-radius: 6px; display: none;">Mapa</button>
+
+    <button id="center-map" style="position: absolute; bottom: 80px; right: 20px; z-index: 10001; display: none;">📍</button>
+
+    <div id="debug-overlay">🛠 Debug log:</div>
+
+    <div id="map-view" style="display: block; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9998;">
+      <div id="leaflet-map" style="width: 100%; height: 100%;"></div>
+    </div>
+
+    <button id="toggle-camera" onclick="toggleCamera()" style="position: absolute; top: 70px; right: 20px; padding: 0.5em 1em; font-size: 1em; z-index: 10001; background: #fff; color: #000; border: 1px solid #000; border-radius: 6px;">🎥 Toggle Camera</button>
+
+    <a-scene id="ar-scene" visible="false" embedded arjs="sourceType: webcam; gpsMinAccuracy: 100; debugUIEnabled: false;" device-orientation-permission-ui>
+    <a-camera gps-new-camera="gpsMinAccuracy: 10;" rotation-reader></a-camera>
+      <a-entity id="user-location-label" position="0 2 -2" text="value: A obter localização...; align: center; color: yellow; width: 6" look-at="[gps-new-camera]"></a-entity>
+      <a-box position="0 0 -3" color="red" animation="property: rotation; to: 0 360 0; loop: true; dur: 3000"></a-box>
+    </a-scene>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
