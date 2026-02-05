@@ -7,132 +7,182 @@ const supabase = createClient(
 
 const logDebug = (msg) => {
   const el = document.getElementById("debug-overlay");
-  el.textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
-  el.scrollTop = el.scrollHeight;
+  if (el) {
+    el.textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
+    el.scrollTop = el.scrollHeight;
+  }
 };
 
-const toggleBtn = document.getElementById("toggle-view");
-const centerBtn = document.getElementById("center-map");
-const mapView = document.getElementById("map-view");
-const scene = document.getElementById("ar-scene");
-let inAR = true;
-let leafletMap = null;
-let userMarker = null;
-let cameraOn = true;
+window.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("toggle-view");
+  const centerBtn = document.getElementById("center-map");
+  const mapView = document.getElementById("map-view");
+  const scene = document.getElementById("ar-scene");
+  const reticle = document.getElementById("reticle");
+  const cam = document.querySelector("a-camera");
+  const gps = document.querySelector("[gps-new-camera]");
+  const statusEl = document.getElementById("status");
 
-function toggleCamera() {
-  const arSystem = scene.systems["arjs"];
-  if (!arSystem || !arSystem._arSession?.arSource?.video) return;
+  let inAR = true;
+  let leafletMap = null;
+  let userMarker = null;
+  let cameraOn = true;
 
-  const stream = arSystem._arSession.arSource.video.srcObject;
-  if (!stream) return;
+  if (statusEl) statusEl.remove();
 
-  if (cameraOn) {
-    stream.getTracks().forEach(track => track.stop());
-    logDebug("📴 Camera turned OFF");
-  } else {
-    arSystem._arSession.arSource.start().then(() => {
-      logDebug("📹 Camera turned ON");
-    });
+  function toggleCamera() {
+    const arSystem = scene.systems["arjs"];
+    if (!arSystem || !arSystem._arSession?.arSource?.video) return;
+
+    const stream = arSystem._arSession.arSource.video.srcObject;
+    if (!stream) return;
+
+    if (cameraOn) {
+      stream.getTracks().forEach(track => track.stop());
+      logDebug("📴 Camera turned OFF");
+    } else {
+      arSystem._arSession.arSource.start().then(() => {
+        logDebug("📹 Camera turned ON");
+      });
+    }
+
+    cameraOn = !cameraOn;
   }
 
-  cameraOn = !cameraOn;
-}
+  window.toggleCamera = toggleCamera;
 
-// 👇 Isto deve vir depois da definição da função
-window.toggleCamera = toggleCamera;
+  toggleBtn.addEventListener("click", () => {
+    inAR = !inAR;
+    centerBtn.style.display = inAR ? "none" : "block";
 
+    if (inAR) {
+      mapView.style.display = "none";
+      scene.setAttribute("visible", "true");
+      toggleBtn.textContent = "Mapa";
+      logDebug("🔄 Switched to AR view");
+    } else {
+      scene.setAttribute("visible", "false");
+      mapView.style.display = "block";
+      toggleBtn.textContent = "AR";
+      logDebug("🗺️ Switched to Map view");
+    }
+  });
 
+  centerBtn.addEventListener("click", () => {
+    if (userMarker && leafletMap) {
+      leafletMap.setView(userMarker.getLatLng(), 15);
+      logDebug("🎯 Centered map on user location");
+    } else {
+      logDebug("⚠️ Cannot center map: user location not available yet");
+    }
+  });
 
-toggleBtn.addEventListener("click", () => {
-  inAR = !inAR;
-  centerBtn.style.display = inAR ? "none" : "block";
+  document.getElementById("start-button").addEventListener("click", async () => {
+    document.getElementById("start-button").style.display = "none";
+    logDebug("▶️ Start button clicked");
 
-  if (inAR) {
-    mapView.style.display = "none";
-    scene.setAttribute("visible", "true");
-    toggleBtn.textContent = "Mapa";
-    logDebug("🔄 Switched to AR view");
-  } else {
-    scene.setAttribute("visible", "false");
-    mapView.style.display = "block";
-    toggleBtn.textContent = "AR";
-    logDebug("🗺️ Switched to Map view");
-  }
-});
-
-centerBtn.addEventListener("click", () => {
-  if (userMarker && leafletMap) {
-    leafletMap.setView(userMarker.getLatLng(), 15);
-    logDebug("🎯 Centered map on user location");
-  } else {
-    logDebug("⚠️ Cannot center map: user location not available yet");
-  }
-});
-
-document.getElementById("start-button").addEventListener("click", async () => {
-  document.getElementById("start-button").style.display = "none";
-  logDebug("▶️ Start button clicked");
-
-  if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
-    try {
-      const response = await DeviceMotionEvent.requestPermission();
-      if (response === "granted") {
-        logDebug("📱 Motion permission granted");
+    if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
+      try {
+        const response = await DeviceMotionEvent.requestPermission();
+        if (response === "granted") {
+          logDebug("📱 Motion permission granted");
+        }
+      } catch (e) {
+        logDebug("❌ Motion permission error: " + e.message);
       }
-    } catch (e) {
-      logDebug("❌ Motion permission error: " + e.message);
     }
-  }
 
-  try {
-    await navigator.mediaDevices.getUserMedia({ video: true });
-    logDebug("📹 Camera stream acquired");
-  } catch (err) {
-    logDebug("❌ Camera error: " + err.message);
-  }
+    scene.setAttribute("visible", "true");
+    logDebug("🟢 AR scene made visible");
 
-  scene.setAttribute("visible", "true");
-  logDebug("🟢 AR scene made visible");
-
-  const arSystem = scene.systems["arjs"];
-  if (arSystem && arSystem._arSession?.arSource) {
-    arSystem._arSession.arSource.onResizeElement();
-    arSystem._arSession.arSource.copyElementSizeTo(scene.canvas);
-    logDebug("🔧 AR.js video source resized");
-  }
-
-  toggleBtn.style.display = "block";
-
-  setTimeout(() => {
-  mapView.style.display = "block";
-
-  leafletMap = L.map("leaflet-map").setView([65.0121, 25.4682], 15);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors",
-  }).addTo(leafletMap);
-  userMarker = L.marker([65.0121, 25.4682]).addTo(leafletMap);
-
-  setTimeout(() => {
-    if (leafletMap) {
-      leafletMap.invalidateSize();
+    const arSystem = scene.systems["arjs"];
+    if (arSystem && arSystem._arSession?.arSource) {
+      arSystem._arSession.arSource.onResizeElement();
+      arSystem._arSession.arSource.copyElementSizeTo(scene.canvas);
+      logDebug("🔧 AR.js video source resized");
     }
-    mapView.style.display = "none";
-    logDebug("🗺️ Leaflet map initialized");
-  }, 200);
 
-}, 1000);
+    toggleBtn.style.display = "block";
+
+    setTimeout(() => {
+      mapView.style.display = "block";
+
+      leafletMap = L.map("leaflet-map").setView([65.0121, 25.4682], 15);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(leafletMap);
+      userMarker = L.marker([65.0121, 25.4682]).addTo(leafletMap);
+
+      setTimeout(() => {
+        if (leafletMap) {
+          leafletMap.invalidateSize();
+        }
+        mapView.style.display = "none";
+        logDebug("🗺️ Leaflet map initialized");
+      }, 200);
+    }, 1000);
 
     const { data: pois, error } = await supabase.from("pois").select("*");
     if (error) {
-        logDebug("❌ Supabase error: " + error.message);
-        return;
+      logDebug("❌ Supabase error: " + error.message);
+      return;
     }
     logDebug(`✅ Fetched ${pois.length} POIs from Supabase`);
     pois.forEach((poi) => {
-        addPOIToScene(poi, scene);
+      addPOIToScene(poi, scene);
     });
     logDebug("📍 POIs added to AR scene");
+  });
+
+  if (cam) {
+    cam.setAttribute("camera-debug", "");
+  } else {
+    logDebug("❌ <a-camera> not found");
+  }
+
+  if (gps) {
+    gps.addEventListener("gps-camera-update-position", (e) => {
+      const { position } = e.detail;
+      logDebug(`📍 GPS position: lat=${position.latitude}, lon=${position.longitude}`);
+
+      const label = document.getElementById("user-location-label");
+      if (label) {
+        label.setAttribute("text", "value", `📍 You\n${position.latitude.toFixed(5)}, ${position.longitude.toFixed(5)}`);
+      }
+
+      if (leafletMap && userMarker) {
+        userMarker.setLatLng([position.latitude, position.longitude]);
+        leafletMap.panTo([position.latitude, position.longitude]);
+      }
+    });
+  } else {
+    logDebug("⚠️ gps-new-camera not found");
+  }
+
+  // Retículo e colocação de cubo
+  if (reticle) {
+    reticle.setAttribute("visible", true);
+    reticle.setAttribute("position", "0 0 -1");
+
+    scene.addEventListener("click", () => {
+      if (reticle.getAttribute("visible")) {
+        const model = document.createElement("a-box");
+        model.setAttribute("position", reticle.getAttribute("position"));
+        model.setAttribute("material", "color: red");
+        model.setAttribute("scale", "0.3 0.3 0.3");
+        scene.appendChild(model);
+      }
+    });
+  }
+});
+
+AFRAME.registerComponent("camera-debug", {
+  init: function () {
+    logDebug("📷 Camera component initialized");
+    this.el.addEventListener("loaded", () => {
+      logDebug("📷 Camera loaded");
+    });
+  },
 });
 
 function addPOIToScene(poi, scene) {
@@ -156,63 +206,3 @@ function addPOIToScene(poi, scene) {
   });
   scene.appendChild(entity);
 }
-
-AFRAME.registerComponent("camera-debug", {
-  init: function () {
-    logDebug("📷 Camera component initialized");
-    this.el.addEventListener("loaded", () => {
-      logDebug("📷 Camera loaded");
-    });
-  },
-});
-
-const cam = document.querySelector("a-camera");
-if (cam) {
-  cam.setAttribute("camera-debug", "");
-} else {
-  logDebug("❌ <a-camera> not found");
-}
-
-const gps = document.querySelector("[gps-new-camera]");
-if (gps) {
-  gps.addEventListener("gps-camera-update-position", (e) => {
-    const { position } = e.detail;
-    logDebug(`📍 GPS position: lat=${position.latitude}, lon=${position.longitude}`);
-
-    const label = document.getElementById("user-location-label");
-    if (label) {
-      label.setAttribute("text", "value", `📍 You\n${position.latitude.toFixed(5)}, ${position.longitude.toFixed(5)}`);
-    }
-
-    if (leafletMap && userMarker) {
-      userMarker.setLatLng([position.latitude, position.longitude]);
-      leafletMap.panTo([position.latitude, position.longitude]);
-    }
-  });
-} else {
-  logDebug("⚠️ gps-new-camera not found");
-  window.toggleCamera = toggleCamera;
-}
-window.addEventListener("DOMContentLoaded", () => {
-  const scene = document.querySelector("a-scene");
-  const reticle = document.getElementById("reticle");
-
-  // Simula detecção de plano (podes adaptar com WebXR hit-test real)
-  reticle.setAttribute("visible", true);
-  reticle.setAttribute("position", "0 0 -1");
-
-  // Coloca um objeto ao clicar
-  scene.addEventListener("click", () => {
-    if (reticle.getAttribute("visible")) {
-      const model = document.createElement("a-box"); // substitui por <a-gltf-model> se quiseres um modelo 3D
-      model.setAttribute("position", reticle.getAttribute("position"));
-      model.setAttribute("material", "color: red");
-      model.setAttribute("scale", "0.3 0.3 0.3");
-      scene.appendChild(model);
-    }
-  });
-
-  // Remove qualquer texto de status
-  const statusEl = document.getElementById("status");
-  if (statusEl) statusEl.remove();
-});
