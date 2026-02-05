@@ -193,3 +193,26 @@ if (gps) {
   logDebug("⚠️ gps-new-camera not found");
   window.toggleCamera = toggleCamera;
 }
+window.addEventListener("DOMContentLoaded", () => {
+  const scene = document.querySelector("a-scene");
+  const reticle = document.getElementById("reticle");
+
+  // Simula detecção de plano (podes adaptar com WebXR hit-test real)
+  reticle.setAttribute("visible", true);
+  reticle.setAttribute("position", "0 0 -1");
+
+  // Coloca um objeto ao clicar
+  scene.addEventListener("click", () => {
+    if (reticle.getAttribute("visible")) {
+      const model = document.createElement("a-box"); // substitui por <a-gltf-model> se quiseres um modelo 3D
+      model.setAttribute("position", reticle.getAttribute("position"));
+      model.setAttribute("material", "color: red");
+      model.setAttribute("scale", "0.3 0.3 0.3");
+      scene.appendChild(model);
+    }
+  });
+
+  // Remove qualquer texto de status
+  const statusEl = document.getElementById("status");
+  if (statusEl) statusEl.remove();
+});
