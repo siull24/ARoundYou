@@ -5,6 +5,7 @@ const supabase = createClient(
   "https://ikoztmugtdfgsoplodvw.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlrb3p0bXVndGRmZ3NvcGxvZHZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMTMyMzEsImV4cCI6MjA4NTY4OTIzMX0.H-RgSdwBrAA0mDUWGTKa-I9tc6_sVWqm6882Yys3Nu8"
 );
+window.supabase = supabase;
 
 // Debug overlay helper
 const logDebug = (msg) => {
