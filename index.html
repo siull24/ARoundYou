@@ -10,33 +10,51 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body style="margin: 0; overflow: hidden;">
+
+    <!-- Botões -->
+    <button id="start-button" style="position: absolute; z-index: 10;">Start</button>
+    <button id="toggle-view" style="display: none; position: absolute; top: 50px; z-index: 10;">Mapa</button>
+    <button id="center-map" style="display: none; position: absolute; top: 90px; z-index: 10;">Centrar</button>
+
+    <!-- Mapa -->
+    <div id="map-view" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;">
+      <div id="leaflet-map" style="width: 100%; height: 100%;"></div>
+    </div>
+
+    <!-- Overlay de debug -->
+    <div id="debug-overlay" style="position: absolute; bottom: 0; background: rgba(0,0,0,0.7); color: white; font-size: 12px; padding: 10px; max-height: 150px; overflow-y: auto; z-index: 10;"></div>
+
+    <!-- Cena AR -->
     <a-scene
-  id="ar-scene"
-  vr-mode-ui="enabled: false"
-  renderer="colorManagement: true;"
-  embedded
-  arjs="sourceType: webcam; debugUIEnabled: false;"
->
-  <!-- Retículo para colocação -->
-  <a-entity id="reticle"
-    geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-    material="color: yellow; shader: flat"
-    position="0 0 -1"
-    visible="false">
-  </a-entity>
+      id="ar-scene"
+      vr-mode-ui="enabled: false"
+      renderer="colorManagement: true;"
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+    >
+      <!-- Retículo -->
+      <a-entity id="reticle"
+        geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+        material="color: yellow; shader: flat"
+        position="0 0 -1"
+        visible="false">
+      </a-entity>
 
-  <!-- Câmera -->
-  <a-camera
-    gps-new-camera
-    position="0 0 0"
-    look-controls="enabled: false"
-    wasd-controls-enabled="false"
-    raycaster="objects: .clickable"
-    cursor="fuse: false; rayOrigin: mouse;">
-  </a-camera>
-</a-scene>
+      <!-- Etiqueta de localização -->
+      <a-entity id="user-location-label" position="0 2 -3" text="value: ; align: center; color: white;"></a-entity>
 
-<script type="module" src="main.js"></script>
-</body>
+      <!-- Câmera -->
+      <a-camera
+        gps-new-camera
+        position="0 0 0"
+        look-controls="enabled: false"
+        wasd-controls-enabled="false"
+        raycaster="objects: .clickable"
+        cursor="fuse: false; rayOrigin: mouse;">
+      </a-camera>
+    </a-scene>
+
+    <!-- Script principal -->
+    <script type="module" src="main.js"></script>
+  </body>
 </html>
-
