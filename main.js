@@ -56,18 +56,31 @@ async function fetchPOIs() {
   });
 }
 
-// Wait for DOM to be ready
 window.addEventListener("DOMContentLoaded", () => {
   logDebug("DOM carregado. A iniciar...");
 
-  // Optional: attach event to a button if it exists
-  const button = document.getElementById("meu-botao");
-  if (button) {
-    button.addEventListener("click", () => {
-      logDebug("Botão clicado!");
+  const startButton = document.getElementById("start-button");
+  const toggleViewButton = document.getElementById("toggle-view");
+  const centerMapButton = document.getElementById("center-map");
+  const mapView = document.getElementById("map-view");
+  const scene = document.querySelector("a-scene");
+
+  if (startButton) {
+    startButton.addEventListener("click", () => {
+      logDebug("Botão Start clicado!");
+
+      startButton.style.display = "none";
+      if (toggleViewButton) toggleViewButton.style.display = "block";
+      if (centerMapButton) centerMapButton.style.display = "block";
+
+      fetchPOIs();
+
+      if (scene) scene.setAttribute("visible", "true");
     });
   }
 
-  // Start fetching POIs
-  fetchPOIs();
+  if (scene) {
+    scene.setAttribute("visible", "false");
+  }
 });
+
