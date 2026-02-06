@@ -49,6 +49,34 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (toggleViewButton) {
+    toggleViewButton.addEventListener("click", () => {
+      const isMapVisible = mapView.style.display === "block";
+
+      if (isMapVisible) {
+        mapView.style.display = "none";
+        if (scene) scene.setAttribute("visible", "true");
+        toggleViewButton.textContent = "Mapa";
+        logDebug("Vista AR ativada.");
+      } else {
+        mapView.style.display = "block";
+        if (scene) scene.setAttribute("visible", "false");
+        toggleViewButton.textContent = "AR";
+
+        if (!window._leafletMap) {
+          window._leafletMap = L.map("map-view").setView([65.0121, 25.4682], 13);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap contributors"
+          }).addTo(window._leafletMap);
+          logDebug("Mapa inicializado.");
+        } else {
+          window._leafletMap.invalidateSize();
+          logDebug("Mapa mostrado.");
+        }
+      }
+    });
+  }
+
   // Função para buscar e renderizar POIs
   async function fetchPOIs() {
     const { data, error } = await supabase.from("pois").select("*");
