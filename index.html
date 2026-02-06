@@ -11,30 +11,32 @@
   </head>
   <body style="margin: 0; overflow: hidden;">
     <a-scene
-      vr-mode-ui="enabled: false"
-      renderer="colorManagement: true;"
-      embedded
-      arjs="sourceType: webcam; debugUIEnabled: false;"
-      webxr="optionalFeatures: hit-test;"
-    >
-      <!-- Retículo para colocação -->
-      <a-entity id="reticle"
-        geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-        material="color: yellow; shader: flat"
-        position="0 0 -1"
-        visible="false">
-      </a-entity>
+  id="ar-scene"
+  vr-mode-ui="enabled: false"
+  renderer="colorManagement: true;"
+  embedded
+  arjs="sourceType: webcam; debugUIEnabled: false;"
+>
+  <!-- Retículo para colocação -->
+  <a-entity id="reticle"
+    geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+    material="color: yellow; shader: flat"
+    position="0 0 -1"
+    visible="false">
+  </a-entity>
 
-      <!-- Câmera -->
-      <a-camera
-        position="0 0 0"
-        look-controls="enabled: false"
-        wasd-controls-enabled="false"
-        raycaster="objects: .clickable"
-        cursor="fuse: false; rayOrigin: mouse;">
-      </a-camera>
-    </a-scene>
+  <!-- Câmera -->
+  <a-camera
+    gps-new-camera
+    position="0 0 0"
+    look-controls="enabled: false"
+    wasd-controls-enabled="false"
+    raycaster="objects: .clickable"
+    cursor="fuse: false; rayOrigin: mouse;">
+  </a-camera>
+</a-scene>
 
-      <script type="module" src="main.js"></script>
-  </body>
+<script type="module" src="main.js"></script>
+</body>
 </html>
+
