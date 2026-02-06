@@ -6,6 +6,7 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlrb3p0bXVndGRmZ3NvcGxvZHZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMTMyMzEsImV4cCI6MjA4NTY4OTIzMX0.H-RgSdwBrAA0mDUWGTKa-I9tc6_sVWqm6882Yys3Nu8"
 );
 
+// Debug overlay helper
 const logDebug = (msg) => {
   const el = document.getElementById("debug-overlay");
   if (el) {
@@ -16,8 +17,9 @@ const logDebug = (msg) => {
   }
 };
 
-// Coloca estes logs dentro do DOMContentLoaded
 window.addEventListener("DOMContentLoaded", () => {
+  logDebug("DOM carregado. A iniciar...");
+
   const startButton = document.getElementById("start-button");
   const toggleViewButton = document.getElementById("toggle-view");
   const centerMapButton = document.getElementById("center-map");
@@ -29,7 +31,9 @@ window.addEventListener("DOMContentLoaded", () => {
   console.log("Center Map:", centerMapButton);
   console.log("Scene:", scene);
 
-  logDebug("DOM carregado. A iniciar...");
+  if (scene) {
+    scene.setAttribute("visible", "false");
+  }
 
   if (startButton) {
     startButton.addEventListener("click", () => {
@@ -45,7 +49,41 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (scene) {
-    scene.setAttribute("visible", "false");
+  // Função para buscar e renderizar POIs
+  async function fetchPOIs() {
+    const { data, error } = await supabase.from("pois").select("*");
+
+    if (error) {
+      logDebug(`Erro ao buscar POIs: ${error.message}`);
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      logDebug("Nenhum POI encontrado na base de dados.");
+      return;
+    }
+
+    logDebug(`POIs carregados: ${data.length}`);
+
+    if (!scene) {
+      logDebug("Erro: <a-scene> não encontrado.");
+      return;
+    }
+
+    data.forEach((poi) => {
+      if (!poi.lat || !poi.lng) {
+        logDebug(`POI inválido: ${JSON.stringify(poi)}`);
+        return;
+      }
+
+      const entity = document.createElement("a-entity");
+      entity.setAttribute("gps-entity-place", `latitude: ${poi.lat}; longitude: ${poi.lng}`);
+      entity.setAttribute("geometry", "primitive: box; height: 1; width: 1; depth: 1");
+      entity.setAttribute("material", "color: red");
+      entity.setAttribute("look-at", "[gps-new-camera]");
+      entity.classList.add("clickable");
+
+      scene.appendChild(entity);
+    });
   }
 });
