@@ -176,10 +176,11 @@ window.addEventListener("DOMContentLoaded", () => {
       if (window._leafletMap) {
         const marker = L.marker([poi.latitude, poi.longitude]).addTo(window._leafletMap);
         const popupContent = `
-          <strong>${poi.title || "POI"}</strong><br>
+          <strong>${poi.name || "POI"}</strong><br>
           ${poi.description || ""}
         `;
         marker.bindPopup(popupContent);
+        logDebug(`Marcador adicionado: ${poi.name || "POI"} (${poi.latitude}, ${poi.longitude})`);
       }
     });
         if (window._leafletMap && data.length > 0) {
