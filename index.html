@@ -37,10 +37,9 @@
 
     <!-- Cena AR -->
     <a-scene
-      id="ar-scene"
+      embedded
       vr-mode-ui="enabled: false"
       renderer="colorManagement: true;"
-      embedded
       arjs="sourceType: webcam; debugUIEnabled: false;"
     >
 
@@ -48,6 +47,7 @@
           <a-box position="0 0.5 0" material="color: red;"></a-box>
           <a-camera gps-new-camera></a-camera>
         </a-scene>
+
 
       <!-- Retículo -->
       <a-entity id="reticle"
@@ -69,6 +69,7 @@
         raycaster="objects: .clickable"
         cursor="fuse: false; rayOrigin: mouse;">
       </a-camera>
+
     </a-scene>
 
     <!-- Script principal -->

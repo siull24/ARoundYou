@@ -13,6 +13,47 @@ const logDebug = (msg) => {
   }
 };
 
+async function fetchPOIs() {
+  const { data, error } = await supabase.from("pois").select("*");
+
+  if (error) {
+    logDebug(`Erro ao buscar POIs: ${error.message}`);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    logDebug("Nenhum POI encontrado na base de dados.");
+    return;
+  }
+
+  logDebug(`POIs carregados: ${data.length}`);
+
+  const scene = document.querySelector("a-scene");
+
+  data.forEach((poi) => {
+    if (!poi.lat || !poi.lng) {
+      logDebug(`POI inválido: ${JSON.stringify(poi)}`);
+      return;
+    }
+
+    const entity = document.createElement("a-entity");
+    entity.setAttribute("gps-entity-place", `latitude: ${poi.lat}; longitude: ${poi.lng}`);
+    entity.setAttribute("geometry", "primitive: box; height: 1; width: 1; depth: 1");
+    entity.setAttribute("material", "color: red");
+    entity.setAttribute("scale", "1 1 1");
+    entity.setAttribute("look-at", "[gps-new-camera]");
+    entity.classList.add("clickable");
+
+    scene.appendChild(entity);
+  });
+}
+
+// Chama a função quando a cena estiver pronta
+window.addEventListener("load", () => {
+  fetchPOIs();
+});
+
+
 window.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggle-view");
   const centerBtn = document.getElementById("center-map");
