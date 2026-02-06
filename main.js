@@ -91,20 +91,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
           fetchPOIs();
 
-          // Teste: marcador manual
-            const testeLat = 65.0121;
-            const testeLng = 25.4682;
-
-            const marcadorTeste = L.circleMarker([testeLat, testeLng], {
-                radius: 6,
-                color: "blue",
-                fillColor: "blue",
-                fillOpacity: 0.9
-            }).addTo(window._leafletMap);
-
-            marcadorTeste.bindPopup("<strong>Marcador de Teste</strong><br>Este é um ponto de teste.");
-            logDebug("Marcador de teste adicionado manualmente.");
-
         } else {
           window._leafletMap.invalidateSize();
           logDebug("Mapa mostrado.");
