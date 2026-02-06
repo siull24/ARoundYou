@@ -174,13 +174,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
       // === MAPA ===
       if (window._leafletMap) {
-        const marker = L.marker([poi.latitude, poi.longitude]).addTo(window._leafletMap);
+        const circle = L.circleMarker([poi.latitude, poi.longitude], {
+            radius: 6,
+            color: "red",
+            fillColor: "red",
+            fillOpacity: 0.9
+            }).addTo(window._leafletMap);
+
         const popupContent = `
-          <strong>${poi.name || "POI"}</strong><br>
-          ${poi.description || ""}
-        `;
-        marker.bindPopup(popupContent);
-        logDebug(`Marcador adicionado: ${poi.name || "POI"} (${poi.latitude}, ${poi.longitude})`);
+            <strong>${poi.name || "POI"}</strong><br>
+            ${poi.description || ""}
+            `;
+        circle.bindPopup(popupContent);
+            logDebug(`Marcador adicionado: ${poi.name || "POI"} (${poi.latitude}, ${poi.longitude})`);
       }
     });
         if (window._leafletMap && data.length > 0) {
