@@ -96,12 +96,10 @@ window.addEventListener("DOMContentLoaded", () => {
           window._leafletMap.setView([latitude, longitude], 15);
           logDebug(`Mapa centrado em (${latitude.toFixed(5)}, ${longitude.toFixed(5)}).`);
 
-          // Remove marcador anterior, se existir
           if (window._userLocationMarker) {
             window._leafletMap.removeLayer(window._userLocationMarker);
           }
 
-          // Adiciona círculo azul para localização atual
           window._userLocationMarker = L.circle([latitude, longitude], {
             radius: 10,
             color: "#007aff",
@@ -111,7 +109,8 @@ window.addEventListener("DOMContentLoaded", () => {
         },
         (err) => {
           logDebug(`Erro ao obter localização: ${err.message}`);
-        }
+        },
+        { enableHighAccuracy: true }
       );
     });
   }
@@ -143,14 +142,24 @@ window.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      // === AR ===
       const entity = document.createElement("a-entity");
       entity.setAttribute("gps-entity-place", `latitude: ${poi.latitude}; longitude: ${poi.longitude}`);
       entity.setAttribute("geometry", "primitive: box; height: 1; width: 1; depth: 1");
       entity.setAttribute("material", "color: red");
       entity.setAttribute("look-at", "[gps-new-camera]");
       entity.classList.add("clickable");
-
       scene.appendChild(entity);
+
+      // === MAPA ===
+      if (window._leafletMap) {
+        const marker = L.marker([poi.latitude, poi.longitude]).addTo(window._leafletMap);
+        const popupContent = `
+          <strong>${poi.title || "POI"}</strong><br>
+          ${poi.description || ""}
+        `;
+        marker.bindPopup(popupContent);
+      }
     });
   }
 });
