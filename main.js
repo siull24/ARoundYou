@@ -77,6 +77,31 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (centerMapButton) {
+    centerMapButton.addEventListener("click", () => {
+      if (!window._leafletMap) {
+        logDebug("Mapa ainda não foi inicializado.");
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        logDebug("Geolocalização não suportada pelo navegador.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          window._leafletMap.setView([latitude, longitude], 15);
+          logDebug(`Mapa centrado em (${latitude.toFixed(5)}, ${longitude.toFixed(5)}).`);
+        },
+        (err) => {
+          logDebug(`Erro ao obter localização: ${err.message}`);
+        }
+      );
+    });
+  }
+
   // Função para buscar e renderizar POIs
   async function fetchPOIs() {
     const { data, error } = await supabase.from("pois").select("*");
@@ -99,13 +124,13 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     data.forEach((poi) => {
-      if (!poi.lat || !poi.lng) {
+      if (!poi.latitude || !poi.longitude) {
         logDebug(`POI inválido: ${JSON.stringify(poi)}`);
         return;
       }
 
       const entity = document.createElement("a-entity");
-      entity.setAttribute("gps-entity-place", `latitude: ${poi.lat}; longitude: ${poi.lng}`);
+      entity.setAttribute("gps-entity-place", `latitude: ${poi.latitude}; longitude: ${poi.longitude}`);
       entity.setAttribute("geometry", "primitive: box; height: 1; width: 1; depth: 1");
       entity.setAttribute("material", "color: red");
       entity.setAttribute("look-at", "[gps-new-camera]");
@@ -115,3 +140,4 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
