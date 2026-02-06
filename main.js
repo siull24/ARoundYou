@@ -94,6 +94,19 @@ window.addEventListener("DOMContentLoaded", () => {
           const { latitude, longitude } = position.coords;
           window._leafletMap.setView([latitude, longitude], 15);
           logDebug(`Mapa centrado em (${latitude.toFixed(5)}, ${longitude.toFixed(5)}).`);
+
+          // Remove marcador anterior, se existir
+          if (window._userLocationMarker) {
+            window._leafletMap.removeLayer(window._userLocationMarker);
+          }
+
+          // Adiciona círculo azul para localização atual
+          window._userLocationMarker = L.circle([latitude, longitude], {
+            radius: 10,
+            color: "#007aff",
+            fillColor: "#007aff",
+            fillOpacity: 0.8
+          }).addTo(window._leafletMap);
         },
         (err) => {
           logDebug(`Erro ao obter localização: ${err.message}`);
@@ -140,4 +153,3 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
