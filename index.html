@@ -42,12 +42,8 @@
       renderer="colorManagement: true;"
       arjs="sourceType: webcam; debugUIEnabled: false;"
     >
-
-        <a-scene embedded arjs="sourceType: webcam;">
-          <a-box position="0 0.5 0" material="color: red;"></a-box>
-          <a-camera gps-new-camera></a-camera>
-        </a-scene>
-
+      <!-- Exemplo de marcador inicial -->
+      <a-box position="0 0.5 0" material="color: red;"></a-box>
 
       <!-- Retículo -->
       <a-entity id="reticle"
@@ -69,8 +65,8 @@
         raycaster="objects: .clickable"
         cursor="fuse: false; rayOrigin: mouse;">
       </a-camera>
-
     </a-scene>
+
 
     <!-- Script principal -->
     <script type="module" src="main.js"></script>
