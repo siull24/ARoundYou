@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-ar@1.8.0/dist/aframe-ar.min.js"></script>
 
+
     <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -42,6 +43,12 @@
       embedded
       arjs="sourceType: webcam; debugUIEnabled: false;"
     >
+
+        <a-scene embedded arjs="sourceType: webcam;">
+          <a-box position="0 0.5 0" material="color: red;"></a-box>
+          <a-camera gps-new-camera></a-camera>
+        </a-scene>
+
       <!-- Retículo -->
       <a-entity id="reticle"
         geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
