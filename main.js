@@ -25,7 +25,22 @@ window.addEventListener("DOMContentLoaded", () => {
   const toggleViewButton = document.getElementById("toggle-view");
   const centerMapButton = document.getElementById("center-map");
   const mapView = document.getElementById("map-view");
+  const viewPOIsButton = document.getElementById("view-pois");
   const scene = document.querySelector("a-scene");
+
+    if (viewPOIsButton) {
+    viewPOIsButton.addEventListener("click", () => {
+        if (!window._leafletMap || !window._poisData || window._poisData.length === 0) {
+        logDebug("POIs não disponíveis ou mapa não inicializado.");
+        return;
+        }
+
+        const bounds = L.latLngBounds(window._poisData.map(poi => [poi.latitude, poi.longitude]));
+        window._leafletMap.fitBounds(bounds, { padding: [50, 50] });
+        logDebug("Mapa ajustado para mostrar todos os POIs.");
+    });
+    }
+
 
   console.log("Start:", startButton);
   console.log("Toggle View:", toggleViewButton);
@@ -43,6 +58,8 @@ window.addEventListener("DOMContentLoaded", () => {
       startButton.style.display = "none";
       if (toggleViewButton) toggleViewButton.style.display = "block";
       if (centerMapButton) centerMapButton.style.display = "block";
+      if (viewPOIsButton) viewPOIsButton.style.display = "block";
+
 
       fetchPOIs();
 
@@ -63,6 +80,7 @@ window.addEventListener("DOMContentLoaded", () => {
         mapView.style.display = "block";
         if (scene) scene.setAttribute("visible", "false");
         toggleViewButton.textContent = "AR";
+
 
         if (!window._leafletMap) {
           window._leafletMap = L.map("map-view").setView([65.0121, 25.4682], 13);
@@ -130,6 +148,8 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     logDebug(`POIs carregados: ${data.length}`);
+    window._poisData = data;
+
 
     if (!scene) {
       logDebug("Erro: <a-scene> não encontrado.");
@@ -140,6 +160,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (!poi.latitude || !poi.longitude) {
         logDebug(`POI inválido: ${JSON.stringify(poi)}`);
         return;
+
       }
 
       // === AR ===
@@ -161,5 +182,10 @@ window.addEventListener("DOMContentLoaded", () => {
         marker.bindPopup(popupContent);
       }
     });
+        if (window._leafletMap && data.length > 0) {
+    const bounds = L.latLngBounds(data.map(poi => [poi.latitude, poi.longitude]));
+    window._leafletMap.fitBounds(bounds, { padding: [50, 50] });
+    }
+
   }
 });
