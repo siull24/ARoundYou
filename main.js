@@ -88,6 +88,9 @@ window.addEventListener("DOMContentLoaded", () => {
             attribution: "© OpenStreetMap contributors"
           }).addTo(window._leafletMap);
           logDebug("Mapa inicializado.");
+
+          fetchPOIs();
+
           // Teste: marcador manual
             const testeLat = 65.0121;
             const testeLng = 25.4682;
@@ -150,6 +153,10 @@ window.addEventListener("DOMContentLoaded", () => {
   // Função para buscar e renderizar POIs
   async function fetchPOIs() {
     const { data, error } = await supabase.from("pois").select("*");
+    logDebug("A buscar POIs da base de dados...");
+    console.log("Dados recebidos:", data);
+
+
 
     if (error) {
       logDebug(`Erro ao buscar POIs: ${error.message}`);
@@ -174,8 +181,9 @@ window.addEventListener("DOMContentLoaded", () => {
       if (!poi.latitude || !poi.longitude) {
         logDebug(`POI inválido: ${JSON.stringify(poi)}`);
         return;
-
       }
+        logDebug(`Renderizando POI: ${poi.name} (${poi.latitude}, ${poi.longitude})`);
+        logDebug(`Marcador renderizado para: ${poi.name}`);
 
       // === AR ===
       const entity = document.createElement("a-entity");
