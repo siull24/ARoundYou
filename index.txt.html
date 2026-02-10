@@ -2,16 +2,13 @@
 <html lang="pt">
   <head>
     <meta charset="UTF-8" />
-    <title>ARoundYou</title>
+    <title>ARoundYou Virtual</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- A-Frame e extensões -->
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
 
-
-    <!-- Leaflet -->
+    <!-- Leaflet (for map view) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -20,54 +17,27 @@
   <body style="margin: 0; overflow: hidden;">
 
     <!-- Botões -->
-   <div style="position: absolute; top: 20px; right: 20px; z-index: 10; display: flex; flex-direction: column; gap: 10px;">
-  <button id="start-button">Start</button>
-  <button id="toggle-view" style="display: none;">Mapa</button>
-  <button id="view-pois" style="display: none;">Ver POIs</button>
-  <button id="center-map" style="display: none;">Centrar</button>
-</div>
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 10; display: flex; flex-direction: column; gap: 10px;">
+      <button id="start-button">Start</button>
+      <button id="toggle-view" style="display: none;">Mapa</button>
+      <button id="view-pois" style="display: none;">Ver POIs</button>
+      <button id="center-map" style="display: none;">Centrar</button>
+    </div>
 
     <!-- Mapa -->
     <div id="map-view" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;">
       <div id="leaflet-map" style="width: 100%; height: 100%;"></div>
-      
     </div>
 
     <!-- Overlay de debug -->
     <div id="debug-overlay" style="position: absolute; bottom: 0; background: rgba(0,0,0,0.7); color: white; font-size: 12px; padding: 10px; max-height: 150px; overflow-y: auto; z-index: 10;"></div>
 
-    <!-- Cena AR -->
-    <a-scene
-      embedded
-      vr-mode-ui="enabled: false"
-      renderer="colorManagement: true;"
-      arjs="sourceType: webcam; debugUIEnabled: false;"
-    >
-      <!-- Exemplo de marcador inicial -->
-      <a-box position="0 0.5 0" material="color: red;"></a-box>
-
-      <!-- Retículo -->
-      <a-entity id="reticle"
-        geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-        material="color: yellow; shader: flat"
-        position="0 0 -1"
-        visible="false">
-      </a-entity>
-
-      <!-- Etiqueta de localização -->
-      <a-entity id="user-location-label" position="0 2 -3" text="value: ; align: center; color: white;"></a-entity>
-
-      <!-- Câmera -->
-      <a-camera
-        gps-new-camera
-        position="0 0 0"
-        look-controls="enabled: false"
-        wasd-controls-enabled="false"
-        raycaster="objects: .clickable"
-        cursor="fuse: false; rayOrigin: mouse;">
-      </a-camera>
+    <!-- Cena 3D Virtual -->
+    <a-scene embedded>
+      <a-sky color="#87CEEB"></a-sky>
+      <a-plane rotation="-90 0 0" width="100" height="100" color="#228B22"></a-plane>
+      <a-camera position="0 1.6 5" look-controls wasd-controls></a-camera>
     </a-scene>
-
 
     <!-- Script principal -->
     <script type="module" src="main.js"></script>

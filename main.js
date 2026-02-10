@@ -172,13 +172,26 @@ window.addEventListener("DOMContentLoaded", () => {
         logDebug(`Marcador renderizado para: ${poi.name}`);
 
       // === AR ===
-      const entity = document.createElement("a-entity");
-      entity.setAttribute("gps-entity-place", `latitude: ${poi.latitude}; longitude: ${poi.longitude}`);
-      entity.setAttribute("geometry", "primitive: box; height: 1; width: 1; depth: 1");
-      entity.setAttribute("material", "color: red");
-      entity.setAttribute("look-at", "[gps-new-camera]");
-      entity.classList.add("clickable");
-      scene.appendChild(entity);
+      // === Virtual 3D ===
+            const index = data.indexOf(poi);
+            const x = index * 3 - 5;
+            const z = -5;
+
+            const box = document.createElement("a-box");
+            box.setAttribute("position", `${x} 1 ${z}`);
+            box.setAttribute("color", "red");
+            box.setAttribute("depth", "1");
+            box.setAttribute("height", "1");
+            box.setAttribute("width", "1");
+            scene.appendChild(box);
+
+            const label = document.createElement("a-text");
+            label.setAttribute("value", poi.name || "POI");
+            label.setAttribute("position", `${x} 2 ${z}`);
+            label.setAttribute("align", "center");
+            label.setAttribute("color", "white");
+            scene.appendChild(label);
+
 
       // === MAPA ===
       if (window._leafletMap) {
