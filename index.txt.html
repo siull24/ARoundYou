@@ -10,15 +10,18 @@
 <body>
   <h1>ARoundYou</h1>
 
-  <button id="start-button">Start</button>
-  <button id="switch-mode" style="display: none;">Modo: Mapa</button>
-  <button id="toggle-view" style="display: none;">Alternar Vista</button>
-  <button id="center-map" style="display: none;">Centrar Mapa</button>
-  <button id="view-pois" style="display: none;">Ver POIs</button>
-  <button id="camera-button" style="display: none;">Ativar Câmara</button>
+  <div style="margin-bottom: 1rem;">
+    <button id="start-button">Start</button>
+    <button id="switch-mode" style="display: none;">Modo: Mapa</button>
+    <button id="toggle-view" style="display: none;">Alternar Vista</button>
+    <button id="center-map" style="display: none;">Centrar Mapa</button>
+    <button id="view-pois" style="display: none;">Ver POIs</button>
+    <button id="camera-button" style="display: none;">Ativar Câmara</button>
+  </div>
 
   <video id="camera" autoplay playsinline style="display: none; width: 100%; max-width: 600px; border-radius: 12px;"></video>
-  <div id="map-view" style="display: none; height: 70vh;"></div>
+
+  <div id="map-view" style="display: none; height: 70vh; margin-bottom: 1rem;"></div>
 
   <div id="poi-list" style="display: none;">
     <h2>Pontos de Interesse</h2>
@@ -31,4 +34,3 @@
   <script type="module" src="main.js"></script>
 </body>
 </html>
- 

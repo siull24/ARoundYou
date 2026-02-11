@@ -25,31 +25,32 @@ window.addEventListener("DOMContentLoaded", () => {
   const mapView = document.getElementById("map-view");
   const viewPOIsButton = document.getElementById("view-pois");
   const switchModeButton = document.getElementById("switch-mode");
-  const video = document.getElementById("camera");
   const cameraButton = document.getElementById("camera-button");
+  const video = document.getElementById("camera");
 
+  // Inicializa o mapa
+  if (mapView) {
+    mapView.style.display = "block";
+    window._leafletMap = L.map("map-view").setView([65.0121, 25.4682], 13);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors"
+    }).addTo(window._leafletMap);
+    logDebug("Mapa inicializado automaticamente.");
+  }
 
   if (startButton) {
     startButton.addEventListener("click", () => {
       logDebug("Botão Start clicado!");
       startButton.style.display = "none";
-      toggleViewButton.style.display = "block";
-      centerMapButton.style.display = "block";
-      viewPOIsButton.style.display = "block";
-      switchModeButton.style.display = "block";
-      cameraButton.style.display = "block";
+      if (toggleViewButton) toggleViewButton.style.display = "block";
+      if (centerMapButton) centerMapButton.style.display = "block";
+      if (viewPOIsButton) viewPOIsButton.style.display = "block";
+      if (switchModeButton) switchModeButton.style.display = "block";
+      if (cameraButton) cameraButton.style.display = "block";
       fetchPOIs();
     });
   }
 
-    mapView.style.display = "block"; // mostrar o mapa imediatamente para evitar confusão
-    window._leafletMap = L.map("map-view").setView([65.0121, 25.4682], 13);
-    window._leafletMap.invalidateSize();
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors"
-    }).addTo(window._leafletMap);
-    logDebug("Mapa inicializado automaticamente.");
-  
   if (switchModeButton) {
     switchModeButton.addEventListener("click", () => {
       const isCameraVisible = video.style.display !== "block";
@@ -65,7 +66,6 @@ window.addEventListener("DOMContentLoaded", () => {
       iniciarCamera();
     });
   }
-
 
   async function iniciarCamera() {
     try {
@@ -120,7 +120,7 @@ window.addEventListener("DOMContentLoaded", () => {
     logDebug(`POIs carregados: ${data.length}`);
     window._poisData = data;
 
-       data.forEach((poi) => {
+    data.forEach((poi) => {
       if (!poi.latitude || !poi.longitude) {
         logDebug(`POI inválido: ${JSON.stringify(poi)}`);
         return;
@@ -138,13 +138,6 @@ window.addEventListener("DOMContentLoaded", () => {
       logDebug(`Marcador adicionado: ${poi.name || "POI"} (${poi.latitude}, ${poi.longitude})`);
     });
 
-    // Ajusta os limites do mapa
-    if (window._leafletMap && data.length > 0) {
-      const bounds = L.latLngBounds(data.map(poi => [poi.latitude, poi.longitude]));
-      window._leafletMap.fitBounds(bounds, { padding: [50, 50] });
-    }
-
-    // Preenche a lista de POIs
     const poiList = document.getElementById("poi-list");
     const poiItems = document.getElementById("poi-items");
 
