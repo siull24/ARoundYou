@@ -26,6 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const viewPOIsButton = document.getElementById("view-pois");
   const switchModeButton = document.getElementById("switch-mode");
   const video = document.getElementById("camera");
+  const cameraButton = document.getElementById("camera-button");
 
   mapView.style.display = "block"; // mostrar o mapa imediatamente para evitar confusão
   window._leafletMap = L.map("map-view").setView([65.0121, 25.4682], 13);
@@ -43,6 +44,7 @@ window.addEventListener("DOMContentLoaded", () => {
       centerMapButton.style.display = "block";
       viewPOIsButton.style.display = "block";
       switchModeButton.style.display = "block";
+      cameraButton.style.display = "block";
       fetchPOIs();
     });
   }
@@ -56,6 +58,13 @@ window.addEventListener("DOMContentLoaded", () => {
       if (isCameraVisible) iniciarCamera();
     });
   }
+  
+  if (cameraButton) {
+    cameraButton.addEventListener("click", () => {
+      iniciarCamera();
+    });
+  }
+
 
   async function iniciarCamera() {
     try {
