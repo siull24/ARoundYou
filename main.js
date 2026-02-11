@@ -28,13 +28,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const video = document.getElementById("camera");
   const cameraButton = document.getElementById("camera-button");
 
-  mapView.style.display = "block"; // mostrar o mapa imediatamente para evitar confusão
-  window._leafletMap = L.map("map-view").setView([65.0121, 25.4682], 13);
-  window._leafletMap.invalidateSize();
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap contributors"
-  }).addTo(window._leafletMap);
-  logDebug("Mapa inicializado automaticamente.");
 
   if (startButton) {
     startButton.addEventListener("click", () => {
@@ -48,7 +41,15 @@ window.addEventListener("DOMContentLoaded", () => {
       fetchPOIs();
     });
   }
- 
+
+    mapView.style.display = "block"; // mostrar o mapa imediatamente para evitar confusão
+    window._leafletMap = L.map("map-view").setView([65.0121, 25.4682], 13);
+    window._leafletMap.invalidateSize();
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors"
+    }).addTo(window._leafletMap);
+    logDebug("Mapa inicializado automaticamente.");
+  
   if (switchModeButton) {
     switchModeButton.addEventListener("click", () => {
       const isCameraVisible = video.style.display !== "block";
@@ -58,7 +59,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (isCameraVisible) iniciarCamera();
     });
   }
-  
+
   if (cameraButton) {
     cameraButton.addEventListener("click", () => {
       iniciarCamera();
