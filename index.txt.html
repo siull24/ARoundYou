@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARoundYou - Câmara e Mapa</title>
+  <title>ARoundYou</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -16,14 +16,13 @@
   <button id="center-map" style="display: none;">Centrar Mapa</button>
   <button id="view-pois" style="display: none;">Ver POIs</button>
 
-  <video id="camera" autoplay playsinline style="display: none;"></video>
+  <video id="camera" autoplay playsinline style="display: none; width: 100%; max-width: 600px; border-radius: 12px;"></video>
+  <div id="map-view" style="display: none; height: 70vh;"></div>
 
   <div id="poi-list" style="display: none;">
     <h2>Pontos de Interesse</h2>
     <ul id="poi-items"></ul>
   </div>
-
-  <div id="map-view" style="display: none; height: 70vh;"></div>
 
   <pre id="debug-overlay"></pre>
 

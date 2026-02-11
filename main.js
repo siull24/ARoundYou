@@ -1,6 +1,12 @@
-window.addEventListener("DOMContentLoaded", () => {
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    // Debug overlay helper
+const supabase = createClient(
+  "https://fzdqeiwbhtdliqcxxlxr.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6ZHFlaXdiaHRkbGlxY3h4bHhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2MTM1MjAsImV4cCI6MjA4NjE4OTUyMH0.LTQxMdooIn2trUbbyBE9jxN940utk8Yr_SptsZWBBt8"
+);
+window.supabase = supabase;
+
+window.addEventListener("DOMContentLoaded", () => {
   const logDebug = (msg) => {
     const el = document.getElementById("debug-overlay");
     if (el) {
@@ -20,6 +26,13 @@ window.addEventListener("DOMContentLoaded", () => {
   const viewPOIsButton = document.getElementById("view-pois");
   const switchModeButton = document.getElementById("switch-mode");
   const video = document.getElementById("camera");
+
+  window._leafletMap = L.map("map-view").setView([65.0121, 25.4682], 13);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors"
+  }).addTo(window._leafletMap);
+  logDebug("Mapa inicializado automaticamente.");
+  mapView.style.display = "block";
 
   if (startButton) {
     startButton.addEventListener("click", () => {
@@ -56,7 +69,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   if (centerMapButton) {
     centerMapButton.addEventListener("click", () => {
-      if (!window._leafletMap) return logDebug("Mapa ainda não foi inicializado.");
       if (!navigator.geolocation) return logDebug("Geolocalização não suportada.");
       navigator.geolocation.getCurrentPosition(
         ({ coords }) => {
@@ -79,8 +91,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
   if (viewPOIsButton) {
     viewPOIsButton.addEventListener("click", () => {
-      if (!window._leafletMap || !window._poisData?.length) {
-        logDebug("POIs não disponíveis ou mapa não inicializado.");
+      if (!window._poisData?.length) {
+        logDebug("POIs não disponíveis.");
         return;
       }
       const bounds = L.latLngBounds(window._poisData.map(poi => [poi.latitude, poi.longitude]));
@@ -97,47 +109,49 @@ window.addEventListener("DOMContentLoaded", () => {
     logDebug(`POIs carregados: ${data.length}`);
     window._poisData = data;
 
-    if (window._leafletMap) {
-      data.forEach((poi) => {
-        if (!poi.latitude || !poi.longitude) {
-          logDebug(`POI inválido: ${JSON.stringify(poi)}`);
-          return;
-        }
+       data.forEach((poi) => {
+      if (!poi.latitude || !poi.longitude) {
+        logDebug(`POI inválido: ${JSON.stringify(poi)}`);
+        return;
+      }
 
-        const circle = L.circleMarker([poi.latitude, poi.longitude], {
-          radius: 6,
-          color: "red",
-          fillColor: "red",
-          fillOpacity: 0.9
-        }).addTo(window._leafletMap);
+      const circle = L.circleMarker([poi.latitude, poi.longitude], {
+        radius: 6,
+        color: "red",
+        fillColor: "red",
+        fillOpacity: 0.9
+      }).addTo(window._leafletMap);
 
-        const popupContent = `<strong>${poi.name || "POI"}</strong><br>${poi.description || ""}`;
-        circle.bindPopup(popupContent);
-        logDebug(`Marcador adicionado: ${poi.name || "POI"} (${poi.latitude}, ${poi.longitude})`);
-      });
+      const popupContent = `<strong>${poi.name || "POI"}</strong><br>${poi.description || ""}`;
+      circle.bindPopup(popupContent);
+      logDebug(`Marcador adicionado: ${poi.name || "POI"} (${poi.latitude}, ${poi.longitude})`);
+    });
 
+    // Ajusta os limites do mapa
+    if (window._leafletMap && data.length > 0) {
       const bounds = L.latLngBounds(data.map(poi => [poi.latitude, poi.longitude]));
       window._leafletMap.fitBounds(bounds, { padding: [50, 50] });
     }
+
+    // Preenche a lista de POIs
+    const poiList = document.getElementById("poi-list");
+    const poiItems = document.getElementById("poi-items");
+
+    if (poiList && poiItems) {
+      poiItems.innerHTML = "";
+      poiList.style.display = "block";
+
+      data.forEach((poi) => {
+        const li = document.createElement("li");
+        li.textContent = poi.name || "POI sem nome";
+        li.addEventListener("click", () => {
+          if (window._leafletMap) {
+            window._leafletMap.setView([poi.latitude, poi.longitude], 17);
+            logDebug(`POI selecionado: ${poi.name}`);
+          }
+        });
+        poiItems.appendChild(li);
+      });
+    }
   }
-  const poiList = document.getElementById("poi-list");
-const poiItems = document.getElementById("poi-items");
-
-if (poiList && poiItems) {
-  poiItems.innerHTML = ""; // limpa a lista
-  poiList.style.display = "block";
-
-  data.forEach((poi) => {
-    const li = document.createElement("li");
-    li.textContent = poi.name || "POI sem nome";
-    li.addEventListener("click", () => {
-      if (window._leafletMap) {
-        window._leafletMap.setView([poi.latitude, poi.longitude], 17);
-        logDebug(`POI selecionado: ${poi.name}`);
-      }
-    });
-    poiItems.appendChild(li);
-  });
-  }
-
 });
