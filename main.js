@@ -21,6 +21,12 @@ const logDebug = (msg) => {
 window.addEventListener("DOMContentLoaded", () => {
   logDebug("DOM carregado. A iniciar...");
 
+  scene.addEventListener("camera-init-error", (e) => {
+  logDebug("Erro ao iniciar a câmara. Verifica permissões e HTTPS.");
+  alert("Erro ao aceder à câmara. Verifica se deste permissão ao navegador.");
+});
+
+
   const startButton = document.getElementById("start-button");
   const toggleViewButton = document.getElementById("toggle-view");
   const centerMapButton = document.getElementById("center-map");
