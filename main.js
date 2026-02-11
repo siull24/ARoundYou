@@ -1,4 +1,16 @@
 window.addEventListener("DOMContentLoaded", () => {
+
+    // Debug overlay helper
+  const logDebug = (msg) => {
+    const el = document.getElementById("debug-overlay");
+    if (el) {
+      el.textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
+      el.scrollTop = el.scrollHeight;
+    } else {
+      console.log(msg);
+    }
+  };
+
   logDebug("DOM carregado. A iniciar...");
 
   const startButton = document.getElementById("start-button");
