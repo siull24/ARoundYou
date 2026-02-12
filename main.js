@@ -15,7 +15,6 @@ window.addEventListener("DOMContentLoaded", () => {
     } else {
       console.log(msg);
     }
-    iniciarCamera();
   };
 
   logDebug("DOM carregado. A iniciar...");
