@@ -62,13 +62,14 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (cameraButton) {
-    cameraButton.addEventListener("click", () => {
+  if (cameraButton && video && mapView) {
+      cameraButton.addEventListener("click", () => {
       iniciarCamera();
-      if (video) video.style.display = "block";
-      if (mapView) mapView.style.display = "none";
+      video.style.display = "block";
+      mapView.style.display = "none";
     });
   }
+
 
   async function iniciarCamera() {
     try {
