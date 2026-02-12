@@ -47,6 +47,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (viewPOIsButton) viewPOIsButton.style.display = "block";
       if (switchModeButton) switchModeButton.style.display = "block";
       if (cameraButton) cameraButton.style.display = "block";
+      if (switchModeButton) switchModeButton.textContent = "Modo: Câmara";
       fetchPOIs();
     });
   }
@@ -64,6 +65,8 @@ window.addEventListener("DOMContentLoaded", () => {
   if (cameraButton) {
     cameraButton.addEventListener("click", () => {
       iniciarCamera();
+      if (video) video.style.display = "block";
+      if (mapView) mapView.style.display = "none";
     });
   }
 
