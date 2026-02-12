@@ -28,6 +28,13 @@ window.addEventListener("DOMContentLoaded", () => {
   const cameraButton = document.getElementById("camera-button");
   const video = document.getElementById("camera");
 
+if (!cameraButton) {
+  logDebug("Erro: botão da câmara não encontrado no DOM.");
+} else {
+  cameraButton.style.display = "block";
+}
+
+
   // Inicializa o mapa
   if (mapView) {
     mapView.style.display = "block";
