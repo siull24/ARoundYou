@@ -22,32 +22,37 @@ window.addEventListener("DOMContentLoaded", () => {
   const startButton = document.getElementById("start-button");
   const toggleViewButton = document.getElementById("toggle-view");
   const centerMapButton = document.getElementById("center-map");
-  const mapView = document.getElementById("map-view");
   const viewPOIsButton = document.getElementById("view-pois");
   const switchModeButton = document.getElementById("switch-mode");
   const cameraButton = document.getElementById("camera-button");
+
   const cameraPreview = document.getElementById("camera-preview");
+  const mapView = document.getElementById("map-view");
 
-  (async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" },
-      audio: false
-    });
-    cameraPreview.srcObject = stream;
-    cameraPreview.style.display = "block";
-    mapView.style.display = "none";
-    logDebug("Câmara iniciada automaticamente ao carregar a página.");
-  } catch (err) {
-    logDebug("Permissão para a câmara negada ou erro: " + err.message);
-    alert("O site precisa de permissão para aceder à câmara.");
-    cameraPreview.style.display = "none";
-    mapView.style.display = "block";
-  }
-})();
+  // Inicia a câmara automaticamente ao carregar a página
+    (async () => {
+      if (!cameraPreview || !mapView) {
+        logDebug("Elementos de câmara ou mapa não encontrados.");
+        return;
+      }
 
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+          audio: false
+        });
+        cameraPreview.srcObject = stream;
+        cameraPreview.style.display = "block";
+        mapView.style.display = "none";
+        logDebug("Câmara iniciada automaticamente ao carregar a página.");
+      } catch (err) {
+        logDebug("Permissão para a câmara negada ou erro: " + err.message);
+        alert("O site precisa de permissão para aceder à câmara.");
+        cameraPreview.style.display = "none";
+        mapView.style.display = "block";
+      }
+  })();
 
-  
 
   // Inicializa o mapa
   if (mapView) {
