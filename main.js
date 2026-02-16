@@ -28,6 +28,27 @@ window.addEventListener("DOMContentLoaded", () => {
   const cameraButton = document.getElementById("camera-button");
   const cameraPreview = document.getElementById("camera-preview");
 
+  (async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+      audio: false
+    });
+    cameraPreview.srcObject = stream;
+    cameraPreview.style.display = "block";
+    mapView.style.display = "none";
+    logDebug("Câmara iniciada automaticamente ao carregar a página.");
+  } catch (err) {
+    logDebug("Permissão para a câmara negada ou erro: " + err.message);
+    alert("O site precisa de permissão para aceder à câmara.");
+    cameraPreview.style.display = "none";
+    mapView.style.display = "block";
+  }
+})();
+
+
+  
+
   // Inicializa o mapa
   if (mapView) {
     mapView.style.display = "block";
