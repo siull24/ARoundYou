@@ -25,6 +25,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const mapView = document.getElementById("map-view");
   const viewPOIsButton = document.getElementById("view-pois");
   const switchModeButton = document.getElementById("switch-mode");
+  const cameraButton = document.getElementById("camera-button");
+  const cameraPreview = document.getElementById("camera-preview");
 
   // Inicializa o mapa
   if (mapView) {
@@ -47,7 +49,26 @@ window.addEventListener("DOMContentLoaded", () => {
         switchModeButton.style.display = "block";
         switchModeButton.textContent = "Modo: Mapa";
       }
+      if (cameraButton) cameraButton.style.display = "block";
       fetchPOIs();
+    });
+  }
+
+  if (cameraButton && cameraPreview) {
+    cameraButton.addEventListener("click", async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+          audio: false
+        });
+        cameraPreview.srcObject = stream;
+        cameraPreview.style.display = "block";
+        mapView.style.display = "none";
+        logDebug("Câmara iniciada com sucesso.");
+      } catch (err) {
+        logDebug("Erro ao aceder à câmara: " + err.message);
+        alert("Não foi possível aceder à câmara. Verifica as permissões.");
+      }
     });
   }
 
