@@ -29,13 +29,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const cameraPreview = document.getElementById("camera-preview");
   const mapView = document.getElementById("map-view");
 
-  // Inicia a câmara automaticamente ao carregar a página
+  if (cameraPreview && mapView) {
     (async () => {
-      if (!cameraPreview || !mapView) {
-        logDebug("Elementos de câmara ou mapa não encontrados.");
-        return;
-      }
-
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: "environment" },
@@ -51,7 +46,10 @@ window.addEventListener("DOMContentLoaded", () => {
         cameraPreview.style.display = "none";
         mapView.style.display = "block";
       }
-  })();
+    })();
+  } else {
+    logDebug("Elementos de câmara ou mapa não encontrados.");
+  }
 
 
   // Inicializa o mapa
