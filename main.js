@@ -99,6 +99,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
 
+
   if (centerMapButton) {
     centerMapButton.addEventListener("click", () => {
       if (!navigator.geolocation) return logDebug("Geolocalização não suportada.");
