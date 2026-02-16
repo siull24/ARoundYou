@@ -25,15 +25,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const mapView = document.getElementById("map-view");
   const viewPOIsButton = document.getElementById("view-pois");
   const switchModeButton = document.getElementById("switch-mode");
-  const cameraButton = document.getElementById("camera-button");
-  const video = document.getElementById("camera");
-
-if (!cameraButton) {
-  logDebug("Erro: botão da câmara não encontrado no DOM.");
-} else {
-  cameraButton.style.display = "block";
-}
-
 
   // Inicializa o mapa
   if (mapView) {
@@ -52,41 +43,12 @@ if (!cameraButton) {
       if (toggleViewButton) toggleViewButton.style.display = "block";
       if (centerMapButton) centerMapButton.style.display = "block";
       if (viewPOIsButton) viewPOIsButton.style.display = "block";
-      if (switchModeButton) switchModeButton.style.display = "block";
-      if (cameraButton) cameraButton.style.display = "block";
-      if (switchModeButton) switchModeButton.textContent = "Modo: Câmara";
+      if (switchModeButton) {
+        switchModeButton.style.display = "block";
+        switchModeButton.textContent = "Modo: Mapa";
+      }
       fetchPOIs();
     });
-  }
-
-  if (switchModeButton) {
-    switchModeButton.addEventListener("click", () => {
-      const isCameraVisible = video.style.display !== "block";
-      video.style.display = isCameraVisible ? "block" : "none";
-      mapView.style.display = isCameraVisible ? "none" : "block";
-      switchModeButton.textContent = isCameraVisible ? "Modo: Câmara" : "Modo: Mapa";
-      if (isCameraVisible) iniciarCamera();
-    });
-  }
-
-  if (cameraButton && video && mapView) {
-      cameraButton.addEventListener("click", () => {
-      iniciarCamera();
-      video.style.display = "block";
-      mapView.style.display = "none";
-    });
-  }
-
-
-  async function iniciarCamera() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.srcObject = stream;
-      logDebug("Câmara iniciada com sucesso.");
-    } catch (err) {
-      logDebug("Erro ao aceder à câmara: " + err.message);
-      alert("Não foi possível aceder à câmara. Verifica as permissões.");
-    }
   }
 
   if (centerMapButton) {
