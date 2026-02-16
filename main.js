@@ -72,6 +72,33 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (switchModeButton && cameraPreview && mapView) {
+    switchModeButton.addEventListener("click", async () => {
+      const isCameraVisible = cameraPreview.style.display === "block";
+
+      if (!isCameraVisible) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" },
+            audio: false
+          });
+          cameraPreview.srcObject = stream;
+          logDebug("Câmara iniciada automaticamente ao mudar de modo.");
+        } catch (err) {
+          logDebug("Erro ao aceder à câmara: " + err.message);
+          alert("Não foi possível aceder à câmara. Verifica as permissões.");
+          return;
+        }
+      }
+
+      cameraPreview.style.display = isCameraVisible ? "none" : "block";
+      mapView.style.display = isCameraVisible ? "block" : "none";
+      switchModeButton.textContent = isCameraVisible ? "Modo: Câmara" : "Modo: Mapa";
+      logDebug(`Alternado para ${isCameraVisible ? "mapa" : "câmara"}.`);
+    });
+  }
+
+
   if (centerMapButton) {
     centerMapButton.addEventListener("click", () => {
       if (!navigator.geolocation) return logDebug("Geolocalização não suportada.");
