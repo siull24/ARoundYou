@@ -58,6 +58,8 @@ window.addEventListener("DOMContentLoaded", () => {
     window._leafletMap = L.map("map-view", {
       center: [65.0121, 25.4682],
       zoom: 13,
+      minZoom: 3,
+      maxZoom: 18,
       worldCopyJump: false,
       maxBounds: [
         [-90, -180],
@@ -68,7 +70,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors",
-      noWrap: true,
+      noWrap: true
     }).addTo(window._leafletMap);
 
     logDebug("Mapa inicializado automaticamente.");
