@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARoundYou</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    #ar-container {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      overflow: hidden;
+      border-radius: 12px;
+      display: none;
+    }
+
+    #camera-preview {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    #ar-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    .ar-marker {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      background: rgba(255,0,0,0.85);
+      color: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+<header class="bg-white shadow p-4 text-center text-2xl font-bold">
+  ARoundYou
+</header>
+
+<main class="p-6 max-w-6xl mx-auto">
+
+  <div class="flex flex-wrap gap-2 mb-6">
+    <button id="start-button" class="bg-green-600 text-white px-4 py-2 rounded">Start</button>
+    <button id="switch-mode" class="hidden bg-blue-600 text-white px-4 py-2 rounded">Modo: Mapa</button>
+    <button id="center-map" class="hidden bg-blue-600 text-white px-4 py-2 rounded">Centrar Mapa</button>
+    <button id="view-pois" class="hidden bg-blue-600 text-white px-4 py-2 rounded">Ver POIs</button>
+  </div>
+
+  <div id="ar-container">
+    <video id="camera-preview" autoplay playsinline></video>
+    <div id="ar-overlay"></div>
+  </div>
+
+  <div id="map-view" class="hidden h-[70vh] rounded-xl shadow-md"></div>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="main.js"></script>
+
+</body>
+</html>
