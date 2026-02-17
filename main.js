@@ -2,247 +2,160 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(
   "https://fzdqeiwbhtdliqcxxlxr.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6ZHFlaXdiaHRkbGlxY3h4bHhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2MTM1MjAsImV4cCI6MjA4NjE4OTUyMH0.LTQxMdooIn2trUbbyBE9jxN940utk8Yr_SptsZWBBt8"
+  "TUA_ANON_KEY_AQUI"
 );
-window.supabase = supabase;
 
 window.addEventListener("DOMContentLoaded", () => {
+
   const logDebug = (msg) => {
     const el = document.getElementById("debug-overlay");
     if (el) {
       el.textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
       el.scrollTop = el.scrollHeight;
-    } else {
-      console.log(msg);
     }
+    console.log(msg);
   };
 
-  logDebug("DOM carregado. A iniciar...");
-
   const startButton = document.getElementById("start-button");
-  const toggleViewButton = document.getElementById("toggle-view");
-  const centerMapButton = document.getElementById("center-map");
-  const viewPOIsButton = document.getElementById("view-pois");
   const switchModeButton = document.getElementById("switch-mode");
   const cameraButton = document.getElementById("camera-button");
 
   const cameraPreview = document.getElementById("camera-preview");
   const mapView = document.getElementById("map-view");
+  const arScene = document.getElementById("ar-scene");
 
-  if (cameraPreview && mapView) {
-    (async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
-          audio: false
-        });
-        cameraPreview.srcObject = stream;
-        cameraPreview.style.display = "block";
-        mapView.style.display = "none";
-        logDebug("Câmara iniciada automaticamente ao carregar a página.");
-      } catch (err) {
-        logDebug("Permissão para a câmara negada ou erro: " + err.message);
-        alert("O site precisa de permissão para aceder à câmara.");
-        cameraPreview.style.display = "none";
-        mapView.style.display = "block";
-      }
-    })();
-  } else {
-    logDebug("Elementos de câmara ou mapa não encontrados.");
+  let map;
+  let poisData = [];
 
-  }
+  // =========================
+  // MAPA
+  // =========================
 
-    const standard = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    noWrap: true
-  });
-
-  const satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-    attribution: "Tiles © Esri",
-    noWrap: true
-  });
-
-  const terrain = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-    attribution: "Map data: © OpenTopoMap contributors",
-    noWrap: true
-  });
-
-
-  // Inicializa o mapa
-  if (mapView) {
+  function initMap() {
     mapView.style.display = "block";
-    window._leafletMap = L.map("map-view", {
-      center: [65.0121, 25.4682],
-      zoom: 13,
-      minZoom: 3,
-      maxZoom: 18,
-      worldCopyJump: false,
-      maxBounds: [
-        [-90, -180],
-        [90, 180]
-      ],
-      maxBoundsViscosity: 1.0,
-      layers: [standard]
-    });
 
-    const baseMaps = {
-    "Standard": standard,
-    "Satellite": satellite,
-    "Terrain": terrain
-  };
+    map = L.map("map-view").setView([65.0121, 25.4682], 13);
 
-    L.control.layers(baseMaps).addTo(window._leafletMap);
-
-
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-      noWrap: true
-    }).addTo(window._leafletMap);
-
-    logDebug("Mapa inicializado automaticamente.");
-  }
-
-
-  if (startButton) {
-    startButton.addEventListener("click", () => {
-      logDebug("Botão Start clicado!");
-      startButton.style.display = "none";
-      if (toggleViewButton) toggleViewButton.style.display = "block";
-      if (centerMapButton) centerMapButton.style.display = "block";
-      if (viewPOIsButton) viewPOIsButton.style.display = "block";
-      if (switchModeButton) {
-        switchModeButton.style.display = "block";
-        switchModeButton.textContent = "Modo: Mapa";
+    L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      {
+        attribution: "&copy; OpenStreetMap &copy; CARTO"
       }
-      if (cameraButton) cameraButton.style.display = "block";
-      fetchPOIs();
-    });
+    ).addTo(map);
   }
 
-  if (cameraButton && cameraPreview) {
-    cameraButton.addEventListener("click", async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
-          audio: false
-        });
-        cameraPreview.srcObject = stream;
-        cameraPreview.style.display = "block";
-        mapView.style.display = "none";
-        logDebug("Câmara iniciada com sucesso.");
-      } catch (err) {
-        logDebug("Erro ao aceder à câmara: " + err.message);
-        alert("Não foi possível aceder à câmara. Verifica as permissões.");
-      }
-    });
-  }
-
-  if (switchModeButton && cameraPreview && mapView) {
-    switchModeButton.addEventListener("click", async () => {
-      const isCameraVisible = cameraPreview.style.display === "block";
-
-      if (!isCameraVisible) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "environment" },
-            audio: false
-          });
-          cameraPreview.srcObject = stream;
-          logDebug("Câmara iniciada automaticamente ao mudar de modo.");
-        } catch (err) {
-          logDebug("Erro ao aceder à câmara: " + err.message);
-          alert("Não foi possível aceder à câmara. Verifica as permissões.");
-          return;
-        }
-      }
-
-      cameraPreview.style.display = isCameraVisible ? "none" : "block";
-      mapView.style.display = isCameraVisible ? "block" : "none";
-      switchModeButton.textContent = isCameraVisible ? "Modo: Câmara" : "Modo: Mapa";
-      logDebug(`Alternado para ${isCameraVisible ? "mapa" : "câmara"}.`);
-    });
-  }
-
-
-
-  if (centerMapButton) {
-    centerMapButton.addEventListener("click", () => {
-      if (!navigator.geolocation) return logDebug("Geolocalização não suportada.");
-      navigator.geolocation.getCurrentPosition(
-        ({ coords }) => {
-          const { latitude, longitude } = coords;
-          window._leafletMap.setView([latitude, longitude], 15);
-          logDebug(`Mapa centrado em (${latitude.toFixed(5)}, ${longitude.toFixed(5)}).`);
-          if (window._userLocationMarker) window._leafletMap.removeLayer(window._userLocationMarker);
-          window._userLocationMarker = L.circle([latitude, longitude], {
-            radius: 10,
-            color: "#007aff",
-            fillColor: "#007aff",
-            fillOpacity: 0.8
-          }).addTo(window._leafletMap);
-        },
-        (err) => logDebug(`Erro ao obter localização: ${err.message}`),
-        { enableHighAccuracy: true }
-      );
-    });
-  }
-
-  if (viewPOIsButton) {
-    viewPOIsButton.addEventListener("click", () => {
-      if (!window._poisData?.length) {
-        logDebug("POIs não disponíveis.");
-        return;
-      }
-      const bounds = L.latLngBounds(window._poisData.map(poi => [poi.latitude, poi.longitude]));
-      window._leafletMap.fitBounds(bounds, { padding: [50, 50] });
-      logDebug("Mapa ajustado para mostrar todos os POIs.");
-    });
-  }
+  // =========================
+  // BUSCAR POIs
+  // =========================
 
   async function fetchPOIs() {
-    const { data, error } = await supabase.from("pois").select("*");
-    logDebug("A buscar POIs da base de dados...");
-    if (error) return logDebug(`Erro ao buscar POIs: ${error.message}`);
-    if (!data?.length) return logDebug("Nenhum POI encontrado.");
-    logDebug(`POIs carregados: ${data.length}`);
-    window._poisData = data;
+    logDebug("A carregar POIs...");
 
-    data.forEach((poi) => {
-      if (!poi.latitude || !poi.longitude) {
-        logDebug(`POI inválido: ${JSON.stringify(poi)}`);
-        return;
-      }
+    const { data, error } = await supabase
+      .from("pois")
+      .select("*");
 
-      const circle = L.circleMarker([poi.latitude, poi.longitude], {
+    if (error) {
+      logDebug("Erro Supabase: " + error.message);
+      return;
+    }
+
+    if (!data.length) {
+      logDebug("Nenhum POI encontrado.");
+      return;
+    }
+
+    poisData = data;
+
+    data.forEach(poi => {
+      if (!poi.latitude || !poi.longitude) return;
+
+      L.circleMarker([poi.latitude, poi.longitude], {
         radius: 6,
         color: "red",
         fillColor: "red",
         fillOpacity: 0.9
-      }).addTo(window._leafletMap);
-
-      const popupContent = `<strong>${poi.name || "POI"}</strong><br>${poi.description || ""}`;
-      circle.bindPopup(popupContent);
-      logDebug(`Marcador adicionado: ${poi.name || "POI"} (${poi.latitude}, ${poi.longitude})`);
+      })
+      .addTo(map)
+      .bindPopup(`<strong>${poi.name || "POI"}</strong>`);
     });
 
-    const poiList = document.getElementById("poi-list");
-    const poiItems = document.getElementById("poi-items");
-
-    if (poiList && poiItems) {
-      poiItems.innerHTML = "";
-      poiList.style.display = "block";
-
-      data.forEach((poi) => {
-        const li = document.createElement("li");
-        li.textContent = poi.name || "POI sem nome";
-        li.addEventListener("click", () => {
-          if (window._leafletMap) {
-            window._leafletMap.setView([poi.latitude, poi.longitude], 17);
-            logDebug(`POI selecionado: ${poi.name}`);
-          }
-        });
-        poiItems.appendChild(li);
-      });
-    }
+    logDebug("POIs carregados com sucesso.");
   }
+
+  // =========================
+  // AR
+  // =========================
+
+  function createARPOIs() {
+
+    arScene.querySelectorAll("a-entity").forEach(el => el.remove());
+
+    poisData.forEach(poi => {
+      if (!poi.latitude || !poi.longitude) return;
+
+      const entity = document.createElement("a-entity");
+
+      entity.setAttribute(
+        "gps-entity-place",
+        `latitude: ${poi.latitude}; longitude: ${poi.longitude};`
+      );
+
+      entity.setAttribute("look-at", "[gps-camera]");
+      entity.setAttribute("text", {
+        value: poi.name || "POI",
+        color: "black",
+        align: "center"
+      });
+
+      entity.setAttribute("scale", "20 20 20");
+
+      arScene.appendChild(entity);
+    });
+
+    logDebug("POIs adicionados ao modo AR.");
+  }
+
+  // =========================
+  // BOTÕES
+  // =========================
+
+  startButton.addEventListener("click", async () => {
+    startButton.style.display = "none";
+    switchModeButton.style.display = "inline-block";
+    cameraButton.style.display = "inline-block";
+
+    initMap();
+    await fetchPOIs();
+  });
+
+  switchModeButton.addEventListener("click", async () => {
+
+    const isCameraVisible = cameraPreview.style.display === "block";
+
+    if (!isCameraVisible) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" }
+        });
+        cameraPreview.srcObject = stream;
+      } catch (err) {
+        logDebug("Erro ao aceder à câmara: " + err.message);
+        return;
+      }
+    }
+
+    cameraPreview.style.display = isCameraVisible ? "none" : "block";
+    mapView.style.display = isCameraVisible ? "block" : "none";
+    switchModeButton.textContent = isCameraVisible ? "Modo: Câmara" : "Modo: Mapa";
+  });
+
+  cameraButton.addEventListener("click", () => {
+    arScene.style.display = "block";
+    mapView.style.display = "none";
+    cameraPreview.style.display = "none";
+
+    createARPOIs();
+  });
+
 });

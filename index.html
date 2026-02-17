@@ -2,41 +2,83 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
+  <title>POIs em AR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARoundYou</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    #map-view,
+    #camera-preview {
+      width: 100%;
+      height: 100vh;
+      display: none;
+    }
+
+    button {
+      position: relative;
+      z-index: 1000;
+      margin: 4px;
+    }
+
+    #debug-overlay {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-height: 150px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.7);
+      color: lime;
+      font-size: 12px;
+      padding: 5px;
+      z-index: 2000;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
+<body>
 
-  <header class="bg-white shadow p-4 text-center text-2xl font-bold">
-    ARoundYou
-  </header>
+  <button id="start-button">Start</button>
+  <button id="switch-mode" style="display:none;">Modo: Mapa</button>
+  <button id="camera-button" style="display:none;">Ativar AR</button>
 
-  <main class="p-8 max-w-7xl mx-auto">
-    <div class="flex flex-wrap gap-2 mb-6">
-      <button id="start-button" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Start</button>
-      <button id="switch-mode" class="hidden bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Modo: Mapa</button>
-      <button id="toggle-view" class="hidden bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Alternar Vista</button>
-      <button id="center-map" class="hidden bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Centrar Mapa</button>
-      <button id="view-pois" class="hidden bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Ver POIs</button>
-      <button id="camera-button" class="hidden bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition">Ativar Câmara</button>
-    </div>
+  <div id="map-view"></div>
+  <video id="camera-preview" autoplay muted playsinline></video>
 
-    <video id="camera-preview" autoplay playsinline class="hidden w-full max-w-xl rounded-xl mb-6"></video>
+  <pre id="debug-overlay"></pre>
 
-    <div id="map-view" class="hidden h-[70vh] mb-6 rounded-xl shadow-md"></div>
+  <!-- AR Scene -->
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; gpsMinAccuracy: 100;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true;"
+    device-orientation-permission-ui="enabled: true"
+    style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; z-index:10;"
+    id="ar-scene">
 
-    <div id="poi-list" class="hidden bg-white shadow-md rounded p-4">
-      <h2 class="text-xl font-semibold mb-2">Pontos de Interesse</h2>
-      <ul id="poi-items" class="list-disc list-inside text-blue-700 space-y-1"></ul>
-    </div>
+    <a-camera gps-camera rotation-reader></a-camera>
+  </a-scene>
 
-    <pre id="debug-overlay" class="text-sm text-gray-500 mt-4"></pre>
-  </main>
+  <!-- LIBRARIAS (ORDEM IMPORTANTE) -->
 
+  <!-- Leaflet -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+  <!-- AR.js -->
+  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
+
+  <!-- TEU SCRIPT -->
   <script type="module" src="main.js"></script>
+
 </body>
 </html>
