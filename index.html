@@ -5,33 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ARoundYou</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <h1>ARoundYou</h1>
+<body class="bg-gray-100 text-gray-800 font-sans">
 
-  <div style="margin-bottom: 1rem;">
-    <button id="start-button">Start</button>
-    <button id="switch-mode" style="display: none;">Modo: Mapa</button>
-    <button id="toggle-view" style="display: none;">Alternar Vista</button>
-    <button id="center-map" style="display: none;">Centrar Mapa</button>
-    <button id="view-pois" style="display: none;">Ver POIs</button>
-    <button id="camera-button" style="display: none;">Ativar Câmara</button>
-  </div>
+  <header class="bg-white shadow p-4 text-center text-2xl font-bold">
+    ARoundYou
+  </header>
 
-  <video id="camera-preview" autoplay playsinline style="display: none; width: 100%; max-width: 600px; border-radius: 12px; margin-bottom: 1rem;"></video>
+  <main class="p-6 max-w-5xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-6">
+      <button id="start-button" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Start</button>
+      <button id="switch-mode" class="hidden bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Modo: Mapa</button>
+      <button id="toggle-view" class="hidden bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Alternar Vista</button>
+      <button id="center-map" class="hidden bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Centrar Mapa</button>
+      <button id="view-pois" class="hidden bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Ver POIs</button>
+      <button id="camera-button" class="hidden bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition">Ativar Câmara</button>
+    </div>
 
-  <div id="map-view" style="display: none; height: 70vh; margin-bottom: 1rem;"></div>
+    <video id="camera-preview" autoplay playsinline class="hidden w-full max-w-xl rounded-xl mb-6"></video>
 
-  <div id="poi-list" style="display: none;">
-    <h2>Pontos de Interesse</h2>
-    <ul id="poi-items"></ul>
-  </div>                 
+    <div id="map-view" class="hidden h-[70vh] mb-6 rounded-xl shadow-md"></div>
 
-  <pre id="debug-overlay"></pre>
+    <div id="poi-list" class="hidden bg-white shadow-md rounded p-4">
+      <h2 class="text-xl font-semibold mb-2">Pontos de Interesse</h2>
+      <ul id="poi-items" class="list-disc list-inside text-blue-700 space-y-1"></ul>
+    </div>
+
+    <pre id="debug-overlay" class="text-sm text-gray-500 mt-4"></pre>
+  </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="main.js"></script>
 </body>
 </html>
