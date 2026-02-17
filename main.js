@@ -67,7 +67,8 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors"
+      attribution: "© OpenStreetMap contributors",
+      noWrap: true,
     }).addTo(window._leafletMap);
 
     logDebug("Mapa inicializado automaticamente.");
