@@ -49,7 +49,23 @@ window.addEventListener("DOMContentLoaded", () => {
     })();
   } else {
     logDebug("Elementos de câmara ou mapa não encontrados.");
+
   }
+
+    const standard = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    noWrap: true
+  });
+
+  const satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+    attribution: "Tiles © Esri",
+    noWrap: true
+  });
+
+  const terrain = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
+    attribution: "Map data: © OpenTopoMap contributors",
+    noWrap: true
+  });
 
 
   // Inicializa o mapa
@@ -65,8 +81,18 @@ window.addEventListener("DOMContentLoaded", () => {
         [-90, -180],
         [90, 180]
       ],
-      maxBoundsViscosity: 1.0
+      maxBoundsViscosity: 1.0,
+      layers: [standard]
     });
+
+    const baseMaps = {
+    "Standard": standard,
+    "Satellite": satellite,
+    "Terrain": terrain
+  };
+
+    L.control.layers(baseMaps).addTo(window._leafletMap);
+
 
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
