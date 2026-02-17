@@ -68,7 +68,7 @@ window.addEventListener("DOMContentLoaded", () => {
       maxBoundsViscosity: 1.0
     });
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {      
       attribution: "© OpenStreetMap contributors",
       noWrap: true
     }).addTo(window._leafletMap);
