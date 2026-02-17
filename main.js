@@ -55,12 +55,24 @@ window.addEventListener("DOMContentLoaded", () => {
   // Inicializa o mapa
   if (mapView) {
     mapView.style.display = "block";
-    window._leafletMap = L.map("map-view").setView([65.0121, 25.4682], 13);
+    window._leafletMap = L.map("map-view", {
+      center: [65.0121, 25.4682],
+      zoom: 13,
+      worldCopyJump: false,
+      maxBounds: [
+        [-90, -180],
+        [90, 180]
+      ],
+      maxBoundsViscosity: 1.0
+    });
+
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors"
     }).addTo(window._leafletMap);
+
     logDebug("Mapa inicializado automaticamente.");
   }
+
 
   if (startButton) {
     startButton.addEventListener("click", () => {
