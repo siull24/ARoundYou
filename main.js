@@ -60,17 +60,21 @@ switchModeButton.addEventListener("click", async () => {
 
 centerMapButton.disabled = true;
 
-function initMap() {
-  mapView.classList.remove("hidden");
+  function initMap() {
+    mapView.classList.remove("hidden");
 
-  map = L.map("map-view").setView([65.0121, 25.4682], 13);
+    map = L.map("map-view", {
+      center: [65.0121, 25.4682],
+      zoom: 13,
+      minZoom: 10, // limite mínimo de zoom
+      maxZoom: 18  // limite máximo de zoom
+    });
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    attribution: "© OpenStreetMap & CARTO"
-  }).addTo(map);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      attribution: "© OpenStreetMap & CARTO"
+    }).addTo(map);
+  }
 
-  centerMapButton.disabled = false;
-}
 
 
 async function fetchPOIs() {
