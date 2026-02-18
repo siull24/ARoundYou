@@ -61,6 +61,8 @@ switchModeButton.addEventListener("click", async () => {
 centerMapButton.disabled = true;
 
   function initMap() {
+    if (map) return;
+    
     mapView.classList.remove("hidden");
 
     map = L.map("map-view", {
