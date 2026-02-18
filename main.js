@@ -66,7 +66,7 @@ centerMapButton.disabled = true;
     map = L.map("map-view", {
       center: [65.0121, 25.4682],
       zoom: 13,
-      minZoom: 1, // limite mínimo de zoom
+      minZoom: 2, // limite mínimo de zoom
       maxZoom: 18  // limite máximo de zoom
     });
 
