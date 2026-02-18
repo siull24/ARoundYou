@@ -58,8 +58,9 @@ switchModeButton.addEventListener("click", async () => {
   }
 });
 
-function initMap() {
+centerMapButton.disabled = true;
 
+function initMap() {
   mapView.classList.remove("hidden");
 
   map = L.map("map-view").setView([65.0121, 25.4682], 13);
@@ -67,7 +68,10 @@ function initMap() {
   L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
     attribution: "© OpenStreetMap & CARTO"
   }).addTo(map);
+
+  centerMapButton.disabled = false;
 }
+
 
 async function fetchPOIs() {
 
@@ -85,6 +89,10 @@ async function fetchPOIs() {
 }
 
 centerMapButton.addEventListener("click", () => {
+  if (!map) {
+    console.warn("Mapa ainda não foi inicializado.");
+    return;
+  }
 
   navigator.geolocation.getCurrentPosition(pos => {
     userLat = pos.coords.latitude;
@@ -96,6 +104,9 @@ centerMapButton.addEventListener("click", () => {
       radius: 10,
       color: "blue"
     }).addTo(map);
+  }, err => {
+    console.error("Erro ao obter localização:", err.message);
+    alert("Não foi possível obter a localização.");
   });
 });
 
