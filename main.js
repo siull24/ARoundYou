@@ -94,9 +94,12 @@ async function startCamera() {
     });
     document.getElementById("camera").srcObject = stream;
   } catch (err) {
-    alert("Erro ao aceder à câmara: " + err);
+    console.warn("Câmara indisponível:", err.message);
+    // Still allow AR view to be shown
   }
+  document.getElementById("cameraError").classList.remove("hidden");
 }
+
 
 // ================= DISTANCE =================
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -161,16 +164,26 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("toggleViewBtn").addEventListener("click", () => {
   const mapEl = document.getElementById("map");
   const camEl = document.getElementById("cameraContainer");
+  const modeIndicator = document.getElementById("modeIndicator");
 
   const mapVisible = !mapEl.classList.contains("hidden");
 
   if (mapVisible) {
     mapEl.classList.add("hidden");
     camEl.classList.remove("hidden");
+    if (modeIndicator) modeIndicator.textContent = "📷 Modo: AR";
   } else {
     camEl.classList.add("hidden");
     mapEl.classList.remove("hidden");
+    if (modeIndicator) modeIndicator.textContent = "🗺️ Modo: Mapa";
   }
 });
+
+
+if (!map) {
+  console.error("Map is not initialized yet.");
+  return;
+}
+
 
 });
