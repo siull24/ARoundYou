@@ -1,40 +1,30 @@
+
 <!DOCTYPE html>
-<html lang="pt">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARoundYou</title>
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>ARoundYou - Real AR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
+<body>
 
-<body class="bg-gray-100 text-gray-800 font-sans">
+<div id="map"></div>
+<button id="locateBtn">📍 Minha Localização</button>
+<button id="starBtn">⭐</button>
+<button id="toggleViewBtn">🔄 Mudar Vista</button>
 
-<header class="bg-white shadow p-4 text-center text-2xl font-bold">
-  ARoundYou
-</header>
 
-<main class="p-6 max-w-6xl mx-auto">
 
-  <div class="flex flex-wrap gap-2 mb-6">
-    <button id="start-button" class="bg-green-600 text-white px-4 py-2 rounded">Start</button>
-    <button id="switch-mode" class="hidden bg-blue-600 text-white px-4 py-2 rounded">Modo: Mapa</button>
-    <button id="center-map" class="hidden bg-blue-600 text-white px-4 py-2 rounded">Centrar Mapa</button>
-    <button id="view-pois" class="hidden bg-blue-600 text-white px-4 py-2 rounded">Ver POIs</button>
-  </div>
+<div id="cameraContainer">
+  <video id="camera" autoplay playsinline></video>
+  <div id="arOverlay"></div>
+  <div id="cameraContainer" class="hidden">
+</div>
 
-  <div id="ar-container">
-    <video id="camera-preview" autoplay playsinline></video>
-    <div id="ar-overlay"></div>
-  </div>
-
-  <div id="map-view" class="hidden h-[70vh] rounded-xl shadow-md"></div>
-
-</main>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script type="module" src="main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="main.js"></script>
 
 </body>
 </html>

@@ -12,6 +12,7 @@ const supabase = createClient(
 );
 
 
+
 let pois = [];
 
 async function fetchPOIs() {
@@ -42,11 +43,11 @@ const overlay = document.getElementById("arOverlay");
 function initMap() {
   const mapContainer = document.getElementById("map");
 
-  // Se o mapa já estiver inicializado, remove-o corretamente
+
   if (map) {
     map.remove();
     map = null;
-    mapContainer.innerHTML = ""; // limpa o conteúdo do div
+    mapContainer.innerHTML = "";
   }
 
   map = L.map(mapContainer, {
@@ -122,14 +123,13 @@ function updateAR() {
   overlay.innerHTML = "";
 
   pois.forEach(poi => {
-   const distance = getDistance(userLat, userLng, poi.latitude, poi.longitude);
+    const distance = getDistance(userLat, userLng, poi.latitude, poi.longitude);
 
-    if (distance <= 100) { // 👈 só aparece até 100m
-
+    if (distance <= 100) {
       const dot = document.createElement("div");
       dot.className = "ar-dot";
 
-      // posição simples centrada (pode evoluir depois com bússola)
+
       dot.style.left = "50%";
       dot.style.top = "40%";
 
@@ -142,7 +142,33 @@ function updateAR() {
   });
 }
 
-document.getElementById("locateBtn").addEventListener("click", locateUser);
+// ================= INITIALIZATION =================
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("locateBtn").addEventListener("click", locateUser);
 
-initMap();
-startCamera();
+  const starBtn = document.getElementById("starBtn");
+  if (starBtn) {
+    starBtn.addEventListener("click", () => {
+      alert("⭐ Star button clicked!");
+    });
+  }
+
+  initMap();
+  startCamera();
+
+  document.getElementById("toggleViewBtn").addEventListener("click", () => {
+  const mapEl = document.getElementById("map");
+  const camEl = document.getElementById("cameraContainer");
+
+  const mapVisible = !mapEl.classList.contains("hidden");
+
+  if (mapVisible) {
+    mapEl.classList.add("hidden");
+    camEl.classList.remove("hidden");
+  } else {
+    camEl.classList.add("hidden");
+    mapEl.classList.remove("hidden");
+  }
+});
+  
+});
