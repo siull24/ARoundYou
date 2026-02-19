@@ -1,6 +1,6 @@
 
 let map;
-let userMarker;
+let userMarker = null;  
 let userLat = null;
 let userLng = null;
 
@@ -76,13 +76,48 @@ function locateUser() {
     (position) => {
       const { latitude, longitude } = position.coords;
       map.setView([latitude, longitude], 16);
-      L.marker([latitude, longitude]).addTo(map).bindPopup("Você está aqui").openPopup();
+
+      if (userMarker) {
+        userMarker.setLatLng([latitude, longitude]);
+      } else {
+        userMarker = L.marker([latitude, longitude])
+          .addTo(map)
+          .bindPopup("Você está aqui")
+          .openPopup();
+      }
+
+      updateAROverlay(latitude, longitude); // if using AR
     },
     (error) => {
       alert("Erro ao obter localização: " + error.message);
     }
   );
 }
+
+function updateAR() {
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      updateAROverlay(latitude, longitude);
+      map.setView([latitude, longitude], 16);
+
+      if (userMarker) {
+        userMarker.setLatLng([latitude, longitude]);
+      } else {
+        userMarker = L.marker([latitude, longitude])
+          .addTo(map)
+          .bindPopup("Você está aqui")
+          .openPopup();
+      }
+    },
+    (error) => {
+      alert("Erro ao obter localização: " + error.message);
+    }
+  );
+}
+
+
 
 
 // ================= CAMERA =================
@@ -119,15 +154,12 @@ function getDistance(lat1, lon1, lat2, lon2) {
 }
 
 // ================= AR OVERLAY =================
-function updateAR() {
+function updateAROverlay(userLat, userLng) {
+  const overlay = document.getElementById("arOverlay");
+  overlay.innerHTML = ""; // clear previous dots
 
-  if (!userLat || !userLng) return;
-
-  overlay.innerHTML = "";
-
-  pois.forEach(poi => {
-    const distance = getDistance(userLat, userLng, poi.latitude, poi.longitude);
-
+  pois.forEach((poi) => {
+    const distance = getDistance(userLat, userLng, poi.lat, poi.lng);
     if (distance <= 100) {
       const dot = document.createElement("div");
       dot.className = "ar-dot";
@@ -135,30 +167,48 @@ function updateAR() {
 
       dot.style.left = "50%";
       dot.style.top = "40%";
-
-      dot.onclick = () => {
-        alert(poi.name + "\nDistância: " + Math.round(distance) + " metros");
-      };
-
+      dot.textContent = poi.name;
       overlay.appendChild(dot);
     }
   });
 }
 
+
 // ================= INITIALIZATION =================
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("locateBtn").addEventListener("click", locateUser);
-
-
-
+  // Start button: hides home screen and starts app
   document.getElementById("startBtn").addEventListener("click", () => {
-  alert("🚀 Aplicação iniciada!");
-  locateUser();
-  startCamera();
-});
+    document.getElementById("homeScreen").style.display = "none";
+    alert("🚀 Aplicação iniciada!");
+    locateUser();
+    startCamera();
+  });
 
 document.getElementById("locateBtn").addEventListener("click", () => {
-  locateUser();
+  if (userMarker && map) {
+    const latlng = userMarker.getLatLng();
+    map.setView(latlng, 16);
+    userMarker.openPopup();
+  } else {
+    locateUser(); // fallback if marker doesn't exist yet
+  }
+});
+
+
+
+  // Optional: toggle view, show POIs, etc.
+  document.getElementById("toggleViewBtn").addEventListener("click", () => {
+    toggleView();
+  });
+
+document.getElementById("showPOIsBtn").addEventListener("click", () => {
+  if (!map || !pois || pois.length === 0) {
+    alert("Nenhum POI disponível.");
+    return;
+  }
+
+  const bounds = L.latLngBounds(pois.map(poi => [poi.latitude, poi.longitude]));
+  map.fitBounds(bounds, { padding: [50, 50] });
 });
 
 
