@@ -30,8 +30,9 @@ function renderPOIsOnMap() {
   pois.forEach(poi => {
     if (!poi.latitude || !poi.longitude) return;
 
-    L.marker([poi.latitude, poi.longitude]).addTo(map)
-      .bindPopup(`<strong>${poi.name}</strong><br>${poi.description || ""}`);
+    L.marker([poi.latitude, poi.longitude], { icon: poiIcon })
+  .addTo(map)
+  .bindPopup(`<strong>${poi.name}</strong><br>${poi.description || ""}`);
   });
 }
 
@@ -67,10 +68,15 @@ function initMap() {
 
 // ================= GEOLOCATION =================
 function locateUser() {
-  if (!navigator.geolocation) {
-    alert("Geolocalização não suportada pelo navegador.");
-    return;
-  }
+  if (userMarker) {
+  userMarker.setLatLng([latitude, longitude]);
+} else {
+  userMarker = L.marker([latitude, longitude], { icon: userIcon })
+    .addTo(map)
+    .bindPopup("Você está aqui")
+    .openPopup();
+}
+
 
   navigator.geolocation.getCurrentPosition(
     (position) => {
@@ -93,6 +99,21 @@ function locateUser() {
     }
   );
 }
+
+const userIcon = L.icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149060.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32]
+});
+
+const poiIcon = L.icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32]
+});
+
 
 function updateAR() {
 

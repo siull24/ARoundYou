@@ -1,9 +1,16 @@
 
-body {
+html, body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: black;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
 }
+
+#map, #cameraContainer {
+  width: 100%;
+  height: 100%;
+}
+
 
 #map {
   height: 40vh;
@@ -165,4 +172,16 @@ body {
   top: 10px;
   left: 10px;
   z-index: 1000;
+}
+
+@media (max-width: 600px) {
+  .fab-label {
+    display: none;
+  }
+
+  .fab {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
 }
