@@ -10,10 +10,18 @@
 </head>
 <body>
 
-<div id="map"></div>
-<button id="locateBtn">📍 Minha Localização</button>
-<button id="starBtn">⭐</button>
-<button id="toggleViewBtn">🔄 Mudar Vista</button>
+<div class="fab-container">
+  <button id="startBtn" class="fab">
+    ▶️<span class="fab-label">Iniciar</span>
+  </button>
+  <button id="locateBtn" class="fab">
+    📍<span class="fab-label">Localizar</span>
+  </button>
+  <button id="toggleViewBtn" class="fab">
+    🔄<span class="fab-label">Mudar Vista</span>
+  </button>
+</div>
+
 
 
 
@@ -24,7 +32,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="main.js"></script>
+<script type="module" src="main.js"></script>
 
 </body>
 </html>

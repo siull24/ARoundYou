@@ -146,12 +146,14 @@ function updateAR() {
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("locateBtn").addEventListener("click", locateUser);
 
-  const starBtn = document.getElementById("starBtn");
-  if (starBtn) {
-    starBtn.addEventListener("click", () => {
-      alert("⭐ Star button clicked!");
-    });
-  }
+
+
+  document.getElementById("startBtn").addEventListener("click", () => {
+  alert("🚀 Aplicação iniciada!");
+  locateUser();
+  startCamera();
+});
+
 
   initMap();
   startCamera();
@@ -170,5 +172,5 @@ document.addEventListener("DOMContentLoaded", () => {
     mapEl.classList.remove("hidden");
   }
 });
-  
+
 });
