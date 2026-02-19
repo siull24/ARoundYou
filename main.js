@@ -67,23 +67,23 @@ function initMap() {
 
 // ================= GEOLOCATION =================
 function locateUser() {
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(position => {
-      userLat = position.coords.latitude;
-      userLng = position.coords.longitude;
-
-      if (!userMarker) {
-        userMarker = L.marker([userLat, userLng]).addTo(map)
-          .bindPopup("Você está aqui");
-      } else {
-        userMarker.setLatLng([userLat, userLng]);
-      }
-
-      map.setView([userLat, userLng], 16);
-      updateAR();
-    });
+  if (!navigator.geolocation) {
+    alert("Geolocalização não suportada pelo navegador.");
+    return;
   }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      map.setView([latitude, longitude], 16);
+      L.marker([latitude, longitude]).addTo(map).bindPopup("Você está aqui").openPopup();
+    },
+    (error) => {
+      alert("Erro ao obter localização: " + error.message);
+    }
+  );
 }
+
 
 // ================= CAMERA =================
 async function startCamera() {
@@ -156,6 +156,11 @@ document.addEventListener("DOMContentLoaded", () => {
   locateUser();
   startCamera();
 });
+
+document.getElementById("locateBtn").addEventListener("click", () => {
+  locateUser();
+});
+
 
 
   initMap();
