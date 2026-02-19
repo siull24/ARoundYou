@@ -143,18 +143,21 @@ html, body {
 
 .fab {
   display: flex;
+  flex-direction: row-reverse; /* icon on right, label on left */
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
-  background: #1e1e1e;
-  color: white;
+  padding: 12px 18px;
+  background-color: #1e1e1e;
+  color: #fff;
   border: none;
   border-radius: 30px;
   font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   transition: background 0.3s ease, transform 0.2s ease;
 }
+
 
 .fab:hover {
   background: #333;
