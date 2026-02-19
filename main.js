@@ -4,26 +4,65 @@ let userMarker;
 let userLat = null;
 let userLng = null;
 
-let pois = [
-  { name: "Café Central", lat: 38.716, lng: -9.139 },
-  { name: "Biblioteca", lat: 38.717, lng: -9.140 }
-];
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabase = createClient(
+  "https://fzdqeiwbhtdliqcxxlxr.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6ZHFlaXdiaHRkbGlxY3h4bHhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2MTM1MjAsImV4cCI6MjA4NjE4OTUyMH0.LTQxMdooIn2trUbbyBE9jxN940utk8Yr_SptsZWBBt8"
+);
+
+
+let pois = [];
+
+async function fetchPOIs() {
+  const { data, error } = await supabase.from("pois").select("*");
+  if (error) {
+    console.error("Erro ao buscar POIs:", error.message);
+    return;
+  }
+  pois = data;
+  renderPOIsOnMap();
+  updateAR();
+}
+
+function renderPOIsOnMap() {
+  pois.forEach(poi => {
+    if (!poi.latitude || !poi.longitude) return;
+
+    L.marker([poi.latitude, poi.longitude]).addTo(map)
+      .bindPopup(`<strong>${poi.name}</strong><br>${poi.description || ""}`);
+  });
+}
+
+
 
 const overlay = document.getElementById("arOverlay");
 
 // ================= MAP =================
 function initMap() {
-  map = L.map('map').setView([38.716, -9.139], 15);
+  const mapContainer = document.getElementById("map");
+
+  // Se o mapa já estiver inicializado, remove-o corretamente
+  if (map) {
+    map.remove();
+    map = null;
+    mapContainer.innerHTML = ""; // limpa o conteúdo do div
+  }
+
+  map = L.map(mapContainer, {
+    center: [38.716, -9.139],
+    zoom: 15,
+    minZoom: 10,
+    maxZoom: 18
+  });
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 
-  pois.forEach(poi => {
-    L.marker([poi.lat, poi.lng]).addTo(map)
-      .bindPopup(poi.name);
-  });
+  fetchPOIs();
 }
+
 
 // ================= GEOLOCATION =================
 function locateUser() {
@@ -83,7 +122,7 @@ function updateAR() {
   overlay.innerHTML = "";
 
   pois.forEach(poi => {
-    const distance = getDistance(userLat, userLng, poi.lat, poi.lng);
+   const distance = getDistance(userLat, userLng, poi.latitude, poi.longitude);
 
     if (distance <= 100) { // 👈 só aparece até 100m
 
