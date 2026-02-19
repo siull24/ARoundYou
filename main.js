@@ -145,16 +145,19 @@ function updateAR() {
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" },
+      video: { facingMode: { ideal: "environment" } },
       audio: false
     });
-    document.getElementById("camera").srcObject = stream;
+    const video = document.getElementById("camera");
+    video.srcObject = stream;
+    video.play();
   } catch (err) {
     console.warn("Câmara indisponível:", err.message);
-    // Still allow AR view to be shown
+    alert("Erro ao acessar a câmera. Verifique as permissões e tente novamente.");
   }
-  document.getElementById("cameraError").classList.remove("hidden");
+  
 }
+
 
 
 // ================= DISTANCE =================
