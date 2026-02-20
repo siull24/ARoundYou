@@ -93,9 +93,9 @@ function locateUser() {
 
 const userIcon = L.icon({
   iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149060.png',
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32]
+  iconSize: [26, 26],
+  iconAnchor: [13, 26],
+  popupAnchor: [0, -26]
 });
 
 const poiIcon = L.icon({
