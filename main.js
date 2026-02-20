@@ -68,16 +68,6 @@ function initMap() {
 
 // ================= GEOLOCATION =================
 function locateUser() {
-  if (userMarker) {
-  userMarker.setLatLng([latitude, longitude]);
-} else {
-  userMarker = L.marker([latitude, longitude], { icon: userIcon })
-    .addTo(map)
-    .bindPopup("Você está aqui")
-    .openPopup();
-}
-
-
   navigator.geolocation.getCurrentPosition(
     (position) => {
       const { latitude, longitude } = position.coords;
@@ -86,19 +76,20 @@ function locateUser() {
       if (userMarker) {
         userMarker.setLatLng([latitude, longitude]);
       } else {
-        userMarker = L.marker([latitude, longitude])
+        userMarker = L.marker([latitude, longitude], { icon: userIcon })
           .addTo(map)
           .bindPopup("Você está aqui")
           .openPopup();
       }
 
-      updateAROverlay(latitude, longitude); // if using AR
+      updateAROverlay(latitude, longitude);
     },
     (error) => {
       alert("Erro ao obter localização: " + error.message);
     }
   );
 }
+
 
 const userIcon = L.icon({
   iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149060.png',
@@ -108,11 +99,14 @@ const userIcon = L.icon({
 });
 
 const poiIcon = L.icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32]
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // red pin icon
+  iconSize: [24, 24],
+  iconAnchor: [12, 24],
+  popupAnchor: [0, -24]
 });
+
+
+
 
 
 function updateAR() {
@@ -200,69 +194,70 @@ function updateAROverlay(userLat, userLng) {
 
 // ================= INITIALIZATION =================
 document.addEventListener("DOMContentLoaded", () => {
-  // Start button: hides home screen and starts app
-  document.getElementById("startBtn").addEventListener("click", () => {
-    document.getElementById("homeScreen").style.display = "none";
-    alert("🚀 Aplicação iniciada!");
-    locateUser();
-    startCamera();
-  });
-
-document.getElementById("locateBtn").addEventListener("click", () => {
-  if (userMarker && map) {
-    const latlng = userMarker.getLatLng();
-    map.setView(latlng, 16);
-    userMarker.openPopup();
-  } else {
-    locateUser(); // fallback if marker doesn't exist yet
-  }
-});
-
-
-
-  // Optional: toggle view, show POIs, etc.
-  document.getElementById("toggleViewBtn").addEventListener("click", () => {
-    toggleView();
-  });
-
-document.getElementById("showPOIsBtn").addEventListener("click", () => {
-  if (!map || !pois || pois.length === 0) {
-    alert("Nenhum POI disponível.");
-    return;
-  }
-
-  const bounds = L.latLngBounds(pois.map(poi => [poi.latitude, poi.longitude]));
-  map.fitBounds(bounds, { padding: [50, 50] });
-});
-
-
-
   initMap();
   startCamera();
 
-  document.getElementById("toggleViewBtn").addEventListener("click", () => {
-  const mapEl = document.getElementById("map");
-  const camEl = document.getElementById("cameraContainer");
-  const modeIndicator = document.getElementById("modeIndicator");
+  const startBtn = document.getElementById("startBtn");
+  const locateBtn = document.getElementById("btnLocate");
+  const showPOIsBtn = document.getElementById("btnPOIs");
+  const toggleViewBtn = document.getElementById("toggleViewBtn");
 
-  const mapVisible = !mapEl.classList.contains("hidden");
-
-  if (mapVisible) {
-    mapEl.classList.add("hidden");
-    camEl.classList.remove("hidden");
-    if (modeIndicator) modeIndicator.textContent = "📷 Modo: AR";
-  } else {
-    camEl.classList.add("hidden");
-    mapEl.classList.remove("hidden");
-    if (modeIndicator) modeIndicator.textContent = "🗺️ Modo: Mapa";
+  if (startBtn) {
+    startBtn.addEventListener("click", () => {
+      document.getElementById("homeScreen").style.display = "none";
+      alert("🚀 Aplicação iniciada!");
+      locateUser();
+      startCamera();
+    });
   }
-});
 
+  if (locateBtn) {
+    locateBtn.addEventListener("click", () => {
+      if (userMarker && map) {
+        const latlng = userMarker.getLatLng();
+        map.setView(latlng, 16);
+        userMarker.openPopup();
+      } else {
+        locateUser();
+      }
+    });
+  }
 
-if (!map) {
-  console.error("Map is not initialized yet.");
-  return;
-}
+  if (showPOIsBtn) {
+    showPOIsBtn.addEventListener("click", () => {
+      if (!map || !pois || pois.length === 0) {
+        alert("Nenhum POI disponível.");
+        return;
+      }
 
+      const bounds = L.latLngBounds(pois.map(poi => [poi.latitude, poi.longitude]));
+      map.fitBounds(bounds, { padding: [50, 50] });
+    });
+  }
 
+  if (toggleViewBtn) {
+    toggleViewBtn.addEventListener("click", () => {
+      const mapEl = document.getElementById("map");
+      const camEl = document.getElementById("cameraContainer");
+      const modeIndicator = document.getElementById("modeIndicator");
+
+      const mapVisible = !mapEl.classList.contains("hidden");
+
+      if (mapVisible) {
+        mapEl.classList.add("hidden");
+        camEl.classList.remove("hidden");
+        if (modeIndicator) modeIndicator.textContent = "📷 Modo: AR";
+      } else {
+        camEl.classList.add("hidden");
+        mapEl.classList.remove("hidden");
+        if (modeIndicator) modeIndicator.textContent = "🗺️ Modo: Mapa";
+      }
+
+      console.log("Mudar Vista button clicked");
+    });
+  }
+
+  if (!map) {
+    console.error("Map is not initialized yet.");
+  }
 });
